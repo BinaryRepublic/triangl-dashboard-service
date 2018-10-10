@@ -34,7 +34,6 @@ class DashboardController (
 
     @PostMapping("/byTimeOfDay/average")
     fun getVisitorCountByTimeOfDayAverage(@RequestBody visitorByTimeAverageReqObj: VisitorByTimeAverageReq): ResponseEntity<*> {
-
         val visitorByTimeOfDayAverage = dashboardService.getVisitorCountByTimeOfDayAverage(visitorByTimeAverageReqObj)
 
         return ResponseEntity.ok().body(visitorByTimeOfDayAverage)

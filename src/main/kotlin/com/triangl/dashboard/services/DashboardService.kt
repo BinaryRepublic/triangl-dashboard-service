@@ -5,9 +5,9 @@ import com.triangl.dashboard.entity.TrackingPointCoordinateJoin
 import com.triangl.dashboard.webservices.googleSQL.GoogleSQLWs
 import org.springframework.stereotype.Service
 import java.time.DayOfWeek
-import java.time.Instant
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.temporal.ChronoUnit
 
 @Service
 class DashboardService (
@@ -15,15 +15,15 @@ class DashboardService (
     val weekDayCountService: WeekDayCountService
 ) {
     fun countVisitorsByTimeframe(visitorCountReqObj: VisitorCountReq): VisitorCountResp {
-        var totalTimeFrame = Timeframe(Instant.parse(visitorCountReqObj.from), Instant.parse(visitorCountReqObj.to))
-        var visitorCountResp = VisitorCountResp()
+        val totalTimeFrame = Timeframe(LocalDateTime.parse(visitorCountReqObj.from), LocalDateTime.parse(visitorCountReqObj.to))
+        val visitorCountResp = VisitorCountResp()
 
-        var sliceSize = ((totalTimeFrame.to.toEpochMilli() - totalTimeFrame.from.toEpochMilli()) / visitorCountReqObj.dataPointCount).toInt()
+        val sliceSize = ((totalTimeFrame.from.until(totalTimeFrame.to, ChronoUnit.NANOS)) / visitorCountReqObj.dataPointCount)
 
         for (element: Int in 1..visitorCountReqObj.dataPointCount) {
-            var newFrom = Instant.ofEpochMilli(totalTimeFrame.from.toEpochMilli() + (sliceSize * (element - 1))).toString()
-            var newTo = Instant.ofEpochMilli(totalTimeFrame.from.toEpochMilli() + (sliceSize * element) - 1).toString()
-            var newCount = googleSQLWs.countDistinctDeviceIdsInTimeFrame(visitorCountReqObj.customerId, newFrom, newTo)
+            val newFrom = totalTimeFrame.from.plusNanos(sliceSize * (element - 1)).toString()
+            val newTo = totalTimeFrame.from.plusNanos((sliceSize * element) - 1).toString()
+            val newCount = googleSQLWs.countDistinctDeviceIdsInTimeFrame(visitorCountReqObj.customerId, newFrom, newTo)
 
             visitorCountResp.data.add(VisitorCountTimeframe(newFrom, newTo, newCount))
         }
@@ -34,14 +34,14 @@ class DashboardService (
     }
 
     fun getVisitorsDurationByArea(visitorAreaDurationReqObj: VisitorAreaDurationReq): List<Area> {
-        val data = googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframe(visitorAreaDurationReqObj.mapId)
+        val data = googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframe(visitorAreaDurationReqObj.mapId, visitorAreaDurationReqObj.from, visitorAreaDurationReqObj.to)
 
         val respData = ArrayList<Area>()
 
         for (area in visitorAreaDurationReqObj.areas) {
-            var areaTrackingPoints = data.filter { it.x!! in area.x..area.x2 && it.y!! in area.y..area.y2 }.sortedWith(compareBy({ it.trackedDeviceId }, {it.createdAt}))
+            val areaTrackingPoints = data.filter { it.x!! in area.x..area.x2 && it.y!! in area.y..area.y2 }.sortedWith(compareBy({ it.trackedDeviceId }, {it.createdAt}))
 
-            var dwellTime = calculateDwellTime(areaTrackingPoints)
+            val dwellTime = calculateDwellTime(areaTrackingPoints)
             area.dwellTime = dwellTime
             respData.add(area)
         }
@@ -59,12 +59,12 @@ class DashboardService (
 
         for (point in areaTrackingPoints) {
 
-            val rightTimeBorder = Instant.parse(lastInstant).plusSeconds(30).toString()
+            val rightTimeBorder = LocalDateTime.parse(lastInstant).plusSeconds(30).toString()
 
             if (point.trackedDeviceId != lastDeviceId
              || point.createdAt!! > rightTimeBorder) {
 
-                dwellTime += (Instant.parse(lastInstant).epochSecond - Instant.parse(firstInstant).epochSecond).toInt()
+                dwellTime += LocalDateTime.parse(firstInstant).until(LocalDateTime.parse(lastInstant), ChronoUnit.SECONDS).toInt()
                 dwellCount ++
 
                 firstInstant = point.createdAt
@@ -75,7 +75,7 @@ class DashboardService (
         }
 
         if (firstInstant != lastInstant) {
-            dwellTime += (Instant.parse(lastInstant).epochSecond - Instant.parse(firstInstant).epochSecond).toInt()
+            dwellTime += LocalDateTime.parse(firstInstant).until(LocalDateTime.parse(lastInstant), ChronoUnit.SECONDS).toInt()
             dwellCount ++
         }
 
@@ -87,25 +87,25 @@ class DashboardService (
     }
 
     fun getVisitorCountByTimeOfDayAverage(visitorByTimeAverageReqObj: VisitorByTimeAverageReq): ArrayList<VisitorByTimeAverageResp> {
-        val data = googleSQLWs.selectAllDeviceIdInTimeframe(visitorByTimeAverageReqObj.customerId)
+        val data = googleSQLWs.selectAllDeviceIdInTimeframe(visitorByTimeAverageReqObj.customerId, visitorByTimeAverageReqObj.from, visitorByTimeAverageReqObj.to)
         val weekDays = arrayListOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
         val response = ArrayList<VisitorByTimeAverageResp>()
         val countedWeekDays = weekDayCountService.countWeekdaysInTimeFrame(LocalDateTime.parse(visitorByTimeAverageReqObj.from), LocalDateTime.parse(visitorByTimeAverageReqObj.to))
 
         for (day in weekDays) {
-            var visitorByTimeAverageResp = VisitorByTimeAverageResp(day.name.toLowerCase().capitalize())
+            val visitorByTimeAverageResp = VisitorByTimeAverageResp(day.name.toLowerCase().capitalize())
             for (hour in 0..23) {
-                var elements = data.filter { it.createdAt!!.dayOfWeek == day && it.createdAt!!.hour == hour }.groupBy { it.createdAt!!.dayOfYear }
+                val elements = data.filter { it.createdAt!!.dayOfWeek == day && it.createdAt!!.hour == hour }.groupBy { it.createdAt!!.dayOfYear }
                 var totalVisitors = 0
-                var totalDays = countedWeekDays.getOrDefault(day, 0)
+                val totalDays = countedWeekDays.getOrDefault(day, 0)
 
 
-                for ((key, value) in elements) {
-                    var uniqueDeviceID = value.distinctBy { it.trackedDeviceId }
+                for ((_, value) in elements) {
+                    val uniqueDeviceID = value.distinctBy { it.trackedDeviceId }
                     totalVisitors += uniqueDeviceID.size
                 }
 
-                var averageVisitors = if (totalDays != 0) {
+                val averageVisitors = if (totalDays != 0) {
                     totalVisitors / totalDays.toDouble()
                 } else {
                     0.0

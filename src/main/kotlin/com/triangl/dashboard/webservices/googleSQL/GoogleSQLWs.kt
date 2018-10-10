@@ -5,6 +5,6 @@ import com.triangl.dashboard.entity.TrackingPointCoordinateJoin
 
 interface GoogleSQLWs {
     fun countDistinctDeviceIdsInTimeFrame(customerId: String, start: String, end: String): Int
-    fun selectAllDeviceIdWithCoordinateInTimeframe(mapId: String): List<TrackingPointCoordinateJoin>
-    fun selectAllDeviceIdInTimeframe(mapId: String): List<TrackingPoint>
+    fun selectAllDeviceIdWithCoordinateInTimeframe(mapId: String, start: String, end: String): List<TrackingPointCoordinateJoin>
+    fun selectAllDeviceIdInTimeframe(mapId: String, start: String, end: String): List<TrackingPoint>
 }

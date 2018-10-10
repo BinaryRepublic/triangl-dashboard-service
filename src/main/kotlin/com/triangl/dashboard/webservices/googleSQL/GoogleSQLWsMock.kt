@@ -23,11 +23,11 @@ class GoogleSQLWsMock: GoogleSQLWs {
         return listOf(trackingPoint1, trackingPoint2, trackingPoint3).size
     }
 
-    override fun selectAllDeviceIdWithCoordinateInTimeframe(mapId: String): List<TrackingPointCoordinateJoin> {
+    override fun selectAllDeviceIdWithCoordinateInTimeframe(mapId: String, start: String, end: String): List<TrackingPointCoordinateJoin> {
         return listOf(trackingPointCoordinateJoin1, trackingPointCoordinateJoin2, trackingPointCoordinateJoin3, trackingPointCoordinateJoin4, trackingPointCoordinateJoin5)
     }
 
-    override fun selectAllDeviceIdInTimeframe(mapId: String): List<TrackingPoint> {
+    override fun selectAllDeviceIdInTimeframe(mapId: String, start: String, end: String): List<TrackingPoint> {
         return listOf(trackingPoint1, trackingPoint2, trackingPoint3)
     }
 }
