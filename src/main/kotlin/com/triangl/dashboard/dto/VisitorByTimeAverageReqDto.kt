@@ -1,6 +1,6 @@
 package com.triangl.dashboard.dto
 
-class VisitorByTimeAverageReq (
+class VisitorByTimeAverageReqDto (
     val customerId: String,
 
     val from: String,

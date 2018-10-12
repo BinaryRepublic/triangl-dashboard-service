@@ -1,7 +1,7 @@
 package com.triangl.dashboard.webservices.googleSQL
 
 import com.triangl.dashboard.entity.TrackingPoint
-import com.triangl.dashboard.entity.TrackingPointCoordinateJoin
+import com.triangl.dashboard.projection.TrackingPointCoordinateJoin
 
 interface GoogleSQLWs {
     fun countDistinctDeviceIdsInTimeFrame(customerId: String, start: String, end: String): Int

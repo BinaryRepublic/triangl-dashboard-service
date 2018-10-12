@@ -1,11 +1,11 @@
 package com.triangl.dashboard.dto
 
-class VisitorAreaDurationReq (
+class VisitorAreaDurationReqDto (
     var mapId: String,
 
     var from: String,
 
     var to: String,
 
-    var areas: List<Area>
+    var areaDtos: List<AreaDto>
 )

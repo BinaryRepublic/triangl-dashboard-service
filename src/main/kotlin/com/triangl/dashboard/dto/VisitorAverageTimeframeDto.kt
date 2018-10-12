@@ -1,6 +1,6 @@
 package com.triangl.dashboard.dto
 
-class VisitorAverageTimeframe (
+class VisitorAverageTimeframeDto (
         val from: String,
 
         val to: String,

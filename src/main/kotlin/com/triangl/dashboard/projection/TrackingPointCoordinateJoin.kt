@@ -1,4 +1,4 @@
-package com.triangl.dashboard.entity
+package com.triangl.dashboard.projection
 
 class TrackingPointCoordinateJoin {
     var trackedDeviceId: String? = null

@@ -1,7 +1,7 @@
 package com.triangl.dashboard.webservices.googleSQL
 
 import com.triangl.dashboard.entity.TrackingPoint
-import com.triangl.dashboard.entity.TrackingPointCoordinateJoin
+import com.triangl.dashboard.projection.TrackingPointCoordinateJoin
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.jdbc.core.JdbcTemplate

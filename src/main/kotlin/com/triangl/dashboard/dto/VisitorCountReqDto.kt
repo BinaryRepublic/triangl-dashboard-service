@@ -1,6 +1,6 @@
 package com.triangl.dashboard.dto
 
-class VisitorCountReq (
+class VisitorCountReqDto (
     var customerId: String,
 
     var from: String,

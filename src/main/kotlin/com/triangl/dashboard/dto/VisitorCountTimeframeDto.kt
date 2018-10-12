@@ -1,6 +1,6 @@
 package com.triangl.dashboard.dto
 
-class VisitorCountTimeframe (
+class VisitorCountTimeframeDto (
     val from: String,
 
     val to: String,

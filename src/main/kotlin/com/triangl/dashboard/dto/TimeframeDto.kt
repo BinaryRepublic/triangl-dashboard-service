@@ -2,7 +2,7 @@ package com.triangl.dashboard.dto
 
 import java.time.LocalDateTime
 
-class Timeframe (
+class TimeframeDto (
         val from: LocalDateTime,
         val to: LocalDateTime
 )

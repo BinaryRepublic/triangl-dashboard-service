@@ -1,8 +1,8 @@
 package com.triangl.dashboard.controller
 
-import com.triangl.dashboard.dto.VisitorAreaDurationReq
-import com.triangl.dashboard.dto.VisitorByTimeAverageReq
-import com.triangl.dashboard.dto.VisitorCountReq
+import com.triangl.dashboard.dto.VisitorAreaDurationReqDto
+import com.triangl.dashboard.dto.VisitorByTimeAverageReqDto
+import com.triangl.dashboard.dto.VisitorCountReqDto
 import com.triangl.dashboard.services.DashboardService
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -17,24 +17,24 @@ class DashboardController (
     val dashboardService: DashboardService
 ) {
     @PostMapping("/count")
-    fun countVisitorsByTimeframe(@RequestBody visitorCountReqObj: VisitorCountReq): ResponseEntity<*> {
+    fun countVisitorsByTimeframe(@RequestBody visitorCountReqDtoObj: VisitorCountReqDto): ResponseEntity<*> {
 
-        val visitorCountResp =  dashboardService.countVisitorsByTimeframe(visitorCountReqObj)
+        val visitorCountResp =  dashboardService.countVisitorsByTimeframe(visitorCountReqDtoObj)
 
         return ResponseEntity.ok().body(visitorCountResp)
     }
 
     @PostMapping("/areas/duration")
-    fun getVisitorDurationByArea(@RequestBody visitorAreaDurationReqObj: VisitorAreaDurationReq): ResponseEntity<*> {
+    fun getVisitorDurationByArea(@RequestBody visitorAreaDurationReqDtoObj: VisitorAreaDurationReqDto): ResponseEntity<*> {
 
-        val areaDwellTime = dashboardService.getVisitorsDurationByArea(visitorAreaDurationReqObj)
+        val areaDwellTime = dashboardService.getVisitorsDurationByArea(visitorAreaDurationReqDtoObj)
 
         return ResponseEntity.ok().body(areaDwellTime)
     }
 
     @PostMapping("/byTimeOfDay/average")
-    fun getVisitorCountByTimeOfDayAverage(@RequestBody visitorByTimeAverageReqObj: VisitorByTimeAverageReq): ResponseEntity<*> {
-        val visitorByTimeOfDayAverage = dashboardService.getVisitorCountByTimeOfDayAverage(visitorByTimeAverageReqObj)
+    fun getVisitorCountByTimeOfDayAverage(@RequestBody visitorByTimeAverageReqDtoObj: VisitorByTimeAverageReqDto): ResponseEntity<*> {
+        val visitorByTimeOfDayAverage = dashboardService.getVisitorCountByTimeOfDayAverage(visitorByTimeAverageReqDtoObj)
 
         return ResponseEntity.ok().body(visitorByTimeOfDayAverage)
     }
