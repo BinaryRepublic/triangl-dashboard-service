@@ -4,9 +4,7 @@ import com.triangl.dashboard.dto.*
 import com.triangl.dashboard.projection.TrackingPointCoordinateJoin
 import com.triangl.dashboard.webservices.googleSQL.GoogleSQLWs
 import org.springframework.stereotype.Service
-import java.time.DayOfWeek
-import java.time.LocalDateTime
-import java.time.LocalTime
+import java.time.*
 import java.time.temporal.ChronoUnit
 
 @Service
@@ -15,7 +13,7 @@ class DashboardService (
     val weekDayCountService: WeekDayCountService
 ) {
     fun countVisitorsByTimeframe(visitorCountReqDtoObj: VisitorCountReqDto): VisitorCountRespDto {
-        val totalTimeFrame = TimeframeDto(LocalDateTime.parse(visitorCountReqDtoObj.from), LocalDateTime.parse(visitorCountReqDtoObj.to))
+        val totalTimeFrame = TimeframeDto(Instant.parse(visitorCountReqDtoObj.from), Instant.parse(visitorCountReqDtoObj.to))
         val visitorCountResp = VisitorCountRespDto()
 
         val sliceSize = ((totalTimeFrame.from.until(totalTimeFrame.to, ChronoUnit.NANOS)) / visitorCountReqDtoObj.dataPointCount)
@@ -59,12 +57,12 @@ class DashboardService (
 
         for (point in areaTrackingPoints) {
 
-            val rightTimeBorder = LocalDateTime.parse(lastInstant).plusSeconds(30).toString()
+            val rightTimeBorder = Instant.parse(lastInstant).plusSeconds(30).toString()
 
             if (point.trackedDeviceId != lastDeviceId
              || point.createdAt!! > rightTimeBorder) {
 
-                dwellTime += LocalDateTime.parse(firstInstant).until(LocalDateTime.parse(lastInstant), ChronoUnit.SECONDS).toInt()
+                dwellTime += Instant.parse(firstInstant).until(Instant.parse(lastInstant), ChronoUnit.SECONDS).toInt()
                 dwellCount ++
 
                 firstInstant = point.createdAt
@@ -75,7 +73,7 @@ class DashboardService (
         }
 
         if (firstInstant != lastInstant) {
-            dwellTime += LocalDateTime.parse(firstInstant).until(LocalDateTime.parse(lastInstant), ChronoUnit.SECONDS).toInt()
+            dwellTime += Instant.parse(firstInstant).until(Instant.parse(lastInstant), ChronoUnit.SECONDS).toInt()
             dwellCount ++
         }
 
@@ -90,7 +88,8 @@ class DashboardService (
         val data = googleSQLWs.selectAllDeviceIdInTimeframe(visitorByTimeAverageReqDtoObj.customerId, visitorByTimeAverageReqDtoObj.from, visitorByTimeAverageReqDtoObj.to)
         val weekDays = arrayListOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
         val response = ArrayList<VisitorByTimeAverageRespDto>()
-        val countedWeekDays = weekDayCountService.countWeekdaysInTimeFrame(LocalDateTime.parse(visitorByTimeAverageReqDtoObj.from), LocalDateTime.parse(visitorByTimeAverageReqDtoObj.to))
+        val countedWeekDays = weekDayCountService.countWeekdaysInTimeFrame(LocalDateTime.ofInstant(Instant.parse(visitorByTimeAverageReqDtoObj.from), ZoneOffset.UTC),
+                                                                                                     LocalDateTime.ofInstant(Instant.parse(visitorByTimeAverageReqDtoObj.to), ZoneOffset.UTC))
 
         for (day in weekDays) {
             val visitorByTimeAverageResp = VisitorByTimeAverageRespDto(day.name.toLowerCase().capitalize())

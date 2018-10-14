@@ -1,8 +1,8 @@
 package com.triangl.dashboard.dto
 
-import java.time.LocalDateTime
+import java.time.Instant
 
 class TimeframeDto (
-        val from: LocalDateTime,
-        val to: LocalDateTime
+        val from: Instant,
+        val to: Instant
 )
