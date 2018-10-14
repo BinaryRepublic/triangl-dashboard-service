@@ -25,7 +25,7 @@ class GoogleSQLWsImp: GoogleSQLWs {
             rs, _ -> TrackingPointCoordinateJoin().apply { trackedDeviceId = rs.getString("TrackingPoint.trackedDeviceId")
                                                            x = rs.getFloat("Coordinate.x")
                                                            y = rs.getFloat("Coordinate.y")
-                                                           createdAt = rs.getTimestamp("createdAt").toLocalDateTime().toString() }
+                                                           createdAt = rs.getTimestamp("createdAt").toInstant().toString() }
         }
     }
 
