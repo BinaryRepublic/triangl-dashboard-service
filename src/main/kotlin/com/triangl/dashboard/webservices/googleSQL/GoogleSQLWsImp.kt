@@ -24,12 +24,12 @@ class GoogleSQLWsImp: GoogleSQLWs {
             rs, _ -> TrackingPointCoordinateJoin().apply { trackedDeviceId = rs.getString("TrackingPoint.trackedDeviceId")
                                                            x = rs.getFloat("Coordinate.x")
                                                            y = rs.getFloat("Coordinate.y")
-                                                           createdAt = rs.getTimestamp("timestamp").toInstant().toString() }
+                                                           createdAt = rs.getTimestamp("TrackingPoint.timestamp").toInstant().toString() }
         }
     }
 
     override fun selectAllDeviceIdInTimeframe(mapId: String, start: String, end: String): List<TrackingPoint> {
-        return jdbcTemplate!!.query("SELECT id, trackedDeviceId, coordinateId, createdAt FROM TrackingPoint WHERE timestamp > ? AND timestamp < ?", arrayOf(start, end)) {
+        return jdbcTemplate!!.query("SELECT id, trackedDeviceId, coordinateId, timestamp FROM TrackingPoint WHERE timestamp > ? AND timestamp < ?", arrayOf(start, end)) {
             rs, _ -> TrackingPoint().apply { trackedDeviceId = rs.getString("trackedDeviceId")
                                     coordinateId = rs.getString("coordinateId")
                                     createdAt = rs.getTimestamp("timestamp").toLocalDateTime() }
