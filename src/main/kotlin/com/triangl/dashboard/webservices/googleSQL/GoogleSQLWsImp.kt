@@ -20,7 +20,7 @@ class GoogleSQLWsImp: GoogleSQLWs {
     }
 
     override fun selectAllDeviceIdWithCoordinateInTimeframe(mapId: String, start: String, end: String): List<TrackingPointCoordinateJoin> {
-        return jdbcTemplate!!.query("SELECT TrackingPoint.trackedDeviceId, Coordinate.x, Coordinate.y, TrackingPoint.timestamp FROM TrackingPoint INNER JOIN Coordinate on TrackingPoint.coordinateId = Coordinate.id") {
+        return jdbcTemplate!!.query("SELECT TrackingPoint.trackedDeviceId, Coordinate.x, Coordinate.y, TrackingPoint.timestamp FROM TrackingPoint INNER JOIN Coordinate on TrackingPoint.coordinateId = Coordinate.id WHERE timestamp > ? AND timestamp < ?", arrayOf(start, end)) {
             rs, _ -> TrackingPointCoordinateJoin().apply { trackedDeviceId = rs.getString("TrackingPoint.trackedDeviceId")
                                                            x = rs.getFloat("Coordinate.x")
                                                            y = rs.getFloat("Coordinate.y")
