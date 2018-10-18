@@ -1,9 +1,10 @@
 package com.triangl.dashboard.controller
 
-import com.triangl.dashboard.dto.VisitorAreaDurationReqDto
-import com.triangl.dashboard.dto.VisitorByTimeAverageReqDto
-import com.triangl.dashboard.dto.VisitorCountReqDto
+import com.triangl.dashboard.dto.*
 import com.triangl.dashboard.services.DashboardService
+import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.ApiResponse
+import io.swagger.annotations.ApiResponses
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*
 class DashboardController (
     val dashboardService: DashboardService
 ) {
+    @ApiOperation(value = "Get the amount of unique Visitors in the requested timeframe per timeslice whereby timeslice is timeframe / dataPointCount", response = VisitorCountRespDto::class)
     @PostMapping("/count")
     fun countVisitorsByTimeframe(@RequestBody visitorCountReqDtoObj: VisitorCountReqDto): ResponseEntity<*> {
 
@@ -22,6 +24,7 @@ class DashboardController (
         return ResponseEntity.ok().body(visitorCountResp)
     }
 
+    @ApiOperation(value = "Get average dwell time for every requested area", response = AreaDto::class, responseContainer = "List")
     @PostMapping("/areas/duration")
     fun getVisitorDurationByArea(@RequestBody visitorAreaDurationReqDtoObj: VisitorAreaDurationReqDto): ResponseEntity<*> {
 
@@ -30,6 +33,7 @@ class DashboardController (
         return ResponseEntity.ok().body(areaDwellTime)
     }
 
+    @ApiOperation(value = "Get average Visitor Count by time of Day and by Weekday", response = VisitorByTimeAverageRespDto::class)
     @PostMapping("/byTimeOfDay/average")
     fun getVisitorCountByTimeOfDayAverage(@RequestBody visitorByTimeAverageReqDtoObj: VisitorByTimeAverageReqDto): ResponseEntity<*> {
         val visitorByTimeOfDayAverage = dashboardService.getVisitorCountByTimeOfDayAverage(visitorByTimeAverageReqDtoObj)
