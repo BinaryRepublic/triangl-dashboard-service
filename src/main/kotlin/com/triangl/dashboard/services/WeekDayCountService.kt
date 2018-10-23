@@ -7,14 +7,14 @@ import java.time.LocalDateTime
 
 @Service
 class WeekDayCountService {
-    fun countWeekdaysInTimeFrame(from: LocalDateTime, to: LocalDateTime): MutableMap<DayOfWeek, Int> {
-        var countWeekDays = HashMap<DayOfWeek, Int>()
-        var day = from.toLocalDate()
-        while (dayIsInTimeFrame(day, from, to)) {
-            countWeekDays[day.dayOfWeek] = countWeekDays.getOrDefault(day.dayOfWeek, 0 ) + 1
-            day = day.plusDays(1)
+    fun occurrencesOfWeekDaysInTimeframe(from: LocalDateTime, to: LocalDateTime): MutableMap<DayOfWeek, Int> {
+        val occurrencePerWeekDay = HashMap<DayOfWeek, Int>()
+        var dayIterator = from.toLocalDate()
+        while (dayIsInTimeFrame(dayIterator, from, to)) {
+            occurrencePerWeekDay[dayIterator.dayOfWeek] = occurrencePerWeekDay.getOrDefault(dayIterator.dayOfWeek, 0 ) + 1
+            dayIterator = dayIterator.plusDays(1)
         }
-        return countWeekDays
+        return occurrencePerWeekDay
     }
 
     fun dayIsInTimeFrame (day: LocalDate, from: LocalDateTime, to: LocalDateTime): Boolean {
