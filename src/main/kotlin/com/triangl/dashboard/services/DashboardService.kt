@@ -21,7 +21,7 @@ class DashboardService (
 
         val sliceSize = ((totalTimeFrame.from.until(totalTimeFrame.to, ChronoUnit.NANOS)) / visitorCountReqDtoObj.dataPointCount)
 
-        for (index: Int in 0..visitorCountReqDtoObj.dataPointCount) {
+        for (index: Int in 0..(visitorCountReqDtoObj.dataPointCount - 1)) {
             val newFrom = totalTimeFrame.from.plusNanos(sliceSize * index)
             val newTo = totalTimeFrame.from.plusNanos((sliceSize * (index + 1)) - 1)
             val newCount = googleSQLWs.countDistinctDeviceIdsInTimeFrame(
