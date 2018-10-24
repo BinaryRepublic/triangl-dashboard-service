@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import java.time.Instant
 import java.time.LocalDateTime
-import java.time.ZoneOffset
 
 
 @Service
@@ -16,24 +15,24 @@ class GoogleSQLWsImp (
     val trackingPointCoordinateJoinRepository: TrackingPointCoordinateJoinRepository
 ): GoogleSQLWs {
 
-    override fun countDistinctDeviceIdsInTimeFrame(customerId: String, start: String, end: String): Int {
+    override fun countDistinctDeviceIdsInTimeFrame(customerId: String, start: Instant, end: Instant): Int {
         return trackingPointRepository.countDistinctOnTrackedDeviceIdByTimestampBetween(
-                start = LocalDateTime.ofInstant(Instant.parse(start), ZoneOffset.UTC),
-                end = LocalDateTime.ofInstant(Instant.parse(end), ZoneOffset.UTC)
+                start = start,
+                end = end
         )
     }
 
-    override fun selectAllDeviceIdWithCoordinateInTimeframe(mapId: String, start: String, end: String): List<TrackingPointCoordinateJoin> {
+    override fun selectAllDeviceIdWithCoordinateInTimeframe(mapId: String, start: Instant, end: Instant): List<TrackingPointCoordinateJoin> {
         return trackingPointCoordinateJoinRepository.findByTimestampBetween(
-                start = Instant.parse(start),
-                end = Instant.parse(end)
+                start = start,
+                end = end
         )
     }
 
-    override fun selectAllDeviceIdInTimeframe(mapId: String, start: String, end: String): List<TrackingPoint> {
+    override fun selectAllDeviceIdInTimeframe(mapId: String, start: LocalDateTime, end: LocalDateTime): List<TrackingPoint> {
         return trackingPointRepository.findByTimestampBetween(
-            start = LocalDateTime.ofInstant(Instant.parse(start), ZoneOffset.UTC),
-            end = LocalDateTime.ofInstant(Instant.parse(end), ZoneOffset.UTC)
+            start = start,
+            end = end
         )
     }
 }

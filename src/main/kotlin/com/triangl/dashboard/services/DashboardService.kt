@@ -1,10 +1,13 @@
 package com.triangl.dashboard.services
 
 import com.triangl.dashboard.dto.*
+import com.triangl.dashboard.helper.InstantHelper
 import com.triangl.dashboard.projection.TrackingPointCoordinateJoin
 import com.triangl.dashboard.webservices.googleSQL.GoogleSQLWs
 import org.springframework.stereotype.Service
-import java.time.*
+import java.time.DayOfWeek
+import java.time.LocalTime
+import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 
 @Service
@@ -13,18 +16,26 @@ class DashboardService (
     val weekDayCountService: WeekDayCountService
 ) {
     fun visitorsDuringTimeframe(visitorCountReqDtoObj: VisitorCountReqDto): VisitorCountRespDto {
-        val totalTimeFrame = TimeframeDto(Instant.parse(visitorCountReqDtoObj.from), Instant.parse(visitorCountReqDtoObj.to))
+        val totalTimeFrame = TimeframeDto(visitorCountReqDtoObj.from, visitorCountReqDtoObj.to)
         val visitorCountResp = VisitorCountRespDto()
 
         val sliceSize = ((totalTimeFrame.from.until(totalTimeFrame.to, ChronoUnit.NANOS)) / visitorCountReqDtoObj.dataPointCount)
 
         for (index: Int in 0..visitorCountReqDtoObj.dataPointCount) {
-            val newFrom = totalTimeFrame.from.plusNanos(sliceSize * index).toString()
-            val newTo = totalTimeFrame.from.plusNanos((sliceSize * (index + 1)) - 1).toString()
-            val newCount = googleSQLWs.countDistinctDeviceIdsInTimeFrame(visitorCountReqDtoObj.customerId, newFrom, newTo)
+            val newFrom = totalTimeFrame.from.plusNanos(sliceSize * index)
+            val newTo = totalTimeFrame.from.plusNanos((sliceSize * (index + 1)) - 1)
+            val newCount = googleSQLWs.countDistinctDeviceIdsInTimeFrame(
+                    visitorCountReqDtoObj.customerId,
+                    newFrom,
+                    newTo)
 
-
-            visitorCountResp.data.add(VisitorCountTimeframeDto(newFrom, newTo, newCount))
+            visitorCountResp.data.add(
+                VisitorCountTimeframeDto(
+                    newFrom.toString(),
+                    newTo.toString(),
+                    newCount
+                )
+            )
         }
 
         visitorCountResp.total = googleSQLWs.countDistinctDeviceIdsInTimeFrame(visitorCountReqDtoObj.customerId, visitorCountReqDtoObj.from, visitorCountReqDtoObj.to)
@@ -38,7 +49,15 @@ class DashboardService (
         val respData = ArrayList<AreaDto>()
 
         for (area in visitorAreaDurationReqDtoObj.areaDtos) {
-            val areaTrackingPoints = data.filter { it.coordinate!!.x!! in area.corner1.x..area.corner2.x && it.coordinate!!.y!! in area.corner1.y..area.corner2.y }.sortedWith(compareBy({ it.trackedDeviceId }, {it.timestamp}))
+            val areaTrackingPoints = data.filter {
+                it.coordinate!!.x!! in area.corner1.x..area.corner2.x
+                && it.coordinate!!.y!! in area.corner1.y..area.corner2.y
+            }.sortedWith(
+                    compareBy(
+                            {it.trackedDeviceId},
+                            {it.timestamp}
+                    )
+            )
             area.customerCount = areaTrackingPoints.distinctBy { it.trackedDeviceId }.count()
 
             if (areaTrackingPoints.isNotEmpty()) {
@@ -90,11 +109,19 @@ class DashboardService (
     }
 
     fun getVisitorCountByTimeOfDayAverage(visitorByTimeAverageReqDtoObj: VisitorByTimeAverageReqDto): ArrayList<VisitorByTimeAverageRespDto> {
-        val data = googleSQLWs.selectAllDeviceIdInTimeframe(visitorByTimeAverageReqDtoObj.customerId, visitorByTimeAverageReqDtoObj.from, visitorByTimeAverageReqDtoObj.to)
+        val instantHelper = InstantHelper(ZoneOffset.of("+02:00"))
+        val data = googleSQLWs.selectAllDeviceIdInTimeframe(
+                visitorByTimeAverageReqDtoObj.customerId,
+                instantHelper.toLocalDateTime(visitorByTimeAverageReqDtoObj.from),
+                instantHelper.toLocalDateTime(visitorByTimeAverageReqDtoObj.to)
+        )
+
         val weekDays = DayOfWeek.values()
         val response = ArrayList<VisitorByTimeAverageRespDto>()
-        val countedWeekDays = weekDayCountService.occurrencesOfWeekDaysInTimeframe(LocalDateTime.ofInstant(Instant.parse(visitorByTimeAverageReqDtoObj.from), ZoneOffset.UTC),
-                                                                                                     LocalDateTime.ofInstant(Instant.parse(visitorByTimeAverageReqDtoObj.to), ZoneOffset.UTC))
+        val countedWeekDays = weekDayCountService.occurrencesOfWeekDaysInTimeframe(
+                instantHelper.toLocalDateTime(visitorByTimeAverageReqDtoObj.from),
+                instantHelper.toLocalDateTime(visitorByTimeAverageReqDtoObj.to)
+        )
 
         for (day in weekDays) {
             val visitorByTimeAverageResp = VisitorByTimeAverageRespDto(day.name.toLowerCase().capitalize())
@@ -115,7 +142,13 @@ class DashboardService (
                     0.0
                 }
 
-                visitorByTimeAverageResp.values.add(VisitorAverageTimeframeDto(LocalTime.of(hour,0).toString(), LocalTime.of(hour,0).plusHours(1).toString(), averageVisitors))
+                visitorByTimeAverageResp.values.add(
+                    VisitorAverageTimeframeDto(
+                        from = LocalTime.of(hour,0).toString(),
+                        to = LocalTime.of(hour,0).plusHours(1).toString(),
+                        average = averageVisitors
+                    )
+                )
             }
             response.add(visitorByTimeAverageResp)
         }

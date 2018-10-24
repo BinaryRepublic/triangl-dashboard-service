@@ -21,15 +21,15 @@ class GoogleSQLWsMock: GoogleSQLWs {
     val trackingPointCoordinateJoin4 = TrackingPointCoordinateJoin().apply { trackedDeviceId = "2"; coordinate = Coordinate().apply { x = 15f; y = 19f }; timestamp = Instant.parse("2018-09-24T07:59:59.996Z") }
     val trackingPointCoordinateJoin5 = TrackingPointCoordinateJoin().apply { trackedDeviceId = "2"; coordinate = Coordinate().apply { x = 1f; y = 2f }; timestamp = Instant.parse("2018-09-24T08:00:20.996Z") }
 
-    override fun countDistinctDeviceIdsInTimeFrame(customerId: String, start: String, end: String): Int {
+    override fun countDistinctDeviceIdsInTimeFrame(customerId: String, start: Instant, end: Instant): Int {
         return listOf(trackingPoint1, trackingPoint2, trackingPoint3).size
     }
 
-    override fun selectAllDeviceIdWithCoordinateInTimeframe(mapId: String, start: String, end: String): List<TrackingPointCoordinateJoin> {
+    override fun selectAllDeviceIdWithCoordinateInTimeframe(mapId: String, start: Instant, end: Instant): List<TrackingPointCoordinateJoin> {
         return listOf(trackingPointCoordinateJoin1, trackingPointCoordinateJoin2, trackingPointCoordinateJoin3, trackingPointCoordinateJoin4, trackingPointCoordinateJoin5)
     }
 
-    override fun selectAllDeviceIdInTimeframe(mapId: String, start: String, end: String): List<TrackingPoint> {
+    override fun selectAllDeviceIdInTimeframe(mapId: String, start: LocalDateTime, end: LocalDateTime): List<TrackingPoint> {
         return listOf(trackingPoint1, trackingPoint2, trackingPoint3)
     }
 }
