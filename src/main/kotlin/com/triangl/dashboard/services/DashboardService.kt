@@ -25,9 +25,10 @@ class DashboardService (
             val newFrom = totalTimeFrame.from.plusNanos(sliceSize * index)
             val newTo = totalTimeFrame.from.plusNanos((sliceSize * (index + 1)) - 1)
             val newCount = googleSQLWs.countDistinctDeviceIdsInTimeFrame(
-                    visitorCountReqDtoObj.customerId,
-                    newFrom,
-                    newTo)
+                visitorCountReqDtoObj.customerId,
+                newFrom,
+                newTo
+            )
 
             visitorCountResp.data.add(
                 VisitorCountTimeframeDto(
@@ -53,10 +54,10 @@ class DashboardService (
                 it.coordinate!!.x!! in area.corner1.x..area.corner2.x
                 && it.coordinate!!.y!! in area.corner1.y..area.corner2.y
             }.sortedWith(
-                    compareBy(
-                            {it.trackedDeviceId},
-                            {it.timestamp}
-                    )
+                compareBy(
+                    {it.trackedDeviceId},
+                    {it.timestamp}
+                )
             )
             area.customerCount = areaTrackingPoints.distinctBy { it.trackedDeviceId }.count()
 
@@ -119,8 +120,8 @@ class DashboardService (
         val weekDays = DayOfWeek.values()
         val response = ArrayList<VisitorByTimeAverageRespDto>()
         val countedWeekDays = weekDayCountService.occurrencesOfWeekDaysInTimeframe(
-                instantHelper.toLocalDateTime(visitorByTimeAverageReqDtoObj.from),
-                instantHelper.toLocalDateTime(visitorByTimeAverageReqDtoObj.to)
+                instantHelper.toLocalDateTime(visitorByTimeAverageReqDtoObj.from).toLocalDate(),
+                instantHelper.toLocalDateTime(visitorByTimeAverageReqDtoObj.to).toLocalDate()
         )
 
         for (day in weekDays) {
