@@ -170,7 +170,7 @@ class DashboardServiceTest {
             to = to
         )
 
-        val occurencesOfWeekDaysInTimeframe = hashMapOf(
+        val occurrencesOfWeekDaysInTimeframe = hashMapOf(
                 DayOfWeek.MONDAY to 1,
                 DayOfWeek.TUESDAY to 1,
                 DayOfWeek.WEDNESDAY to 2,
@@ -180,7 +180,7 @@ class DashboardServiceTest {
                 DayOfWeek.SUNDAY to 1
         )
 
-        given(weekDayCountService.occurrencesOfWeekDaysInTimeframe(any(), any())).willReturn(occurencesOfWeekDaysInTimeframe)
+        given(weekDayCountService.occurrencesOfWeekDaysInTimeframe(any(), any())).willReturn(occurrencesOfWeekDaysInTimeframe)
         given(googleSQLWs.selectAllDeviceIdInTimeframe(
             anyString(),
             any(),
