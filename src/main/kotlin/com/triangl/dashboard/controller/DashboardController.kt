@@ -3,8 +3,6 @@ package com.triangl.dashboard.controller
 import com.triangl.dashboard.dto.*
 import com.triangl.dashboard.services.DashboardService
 import io.swagger.annotations.ApiOperation
-import io.swagger.annotations.ApiResponse
-import io.swagger.annotations.ApiResponses
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -31,6 +29,15 @@ class DashboardController (
         val areaDwellTime = dashboardService.getVisitorsDurationByArea(visitorAreaDurationReqDtoObj)
 
         return ResponseEntity.ok().body(areaDwellTime)
+    }
+
+    @ApiOperation(value = "Get average dwell time for every requested 2D polygon", response = AreaDto::class, responseContainer = "List")
+    @PostMapping("/polygons/duration")
+    fun getVisitorDurationByPolygon(@RequestBody visitorAreaDurationReqDtoObj: VisitorAreaDurationReqDto): ResponseEntity<*> {
+
+        val polygonDwellTime = dashboardService.getVisitorsDurationByPolygon(visitorAreaDurationReqDtoObj)
+
+        return ResponseEntity.ok().body(polygonDwellTime)
     }
 
     @ApiOperation(value = "Get average Visitor Count by time of Day and by Weekday", response = VisitorByTimeAverageRespDto::class)

@@ -72,6 +72,33 @@ class DashboardService (
         return respData
     }
 
+    fun getVisitorsDurationByPolygon(visitorAreaDurationReqDtoObj: VisitorAreaDurationReqDto): List<AreaDto> {
+        val data = googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframe(visitorAreaDurationReqDtoObj.mapId, visitorAreaDurationReqDtoObj.from, visitorAreaDurationReqDtoObj.to)
+
+        val respData = ArrayList<AreaDto>()
+
+        for (area in visitorAreaDurationReqDtoObj.areaDtos) {
+            val trackingPointsInPolygon = data.filter {
+                area.corners!!.contains(it.x!!.toInt(), it.y!!.toInt())
+            }.sortedWith(
+                compareBy(
+                    {it.trackedDeviceId},
+                    {it.timestamp}
+                )
+            )
+            area.customerCount = trackingPointsInPolygon.distinctBy { it.trackedDeviceId }.count()
+
+            if (trackingPointsInPolygon.isNotEmpty()) {
+                area.dwellTime = calculateDwellTime(trackingPointsInPolygon)
+            } else {
+                area.dwellTime = 0
+            }
+            respData.add(area)
+        }
+
+        return respData
+    }
+
     fun calculateDwellTime(areaTrackingPoints: List<TrackingPointCoordinateJoin>): Int {
         var dwellTime = 0
         var dwellCount = 0
