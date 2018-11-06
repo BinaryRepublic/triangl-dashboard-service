@@ -38,6 +38,7 @@ class DashboardService (
 
         for (area in visitorAreaDurationReqDtoObj.areaDtos) {
             val areaTrackingPoints = data.filter { it.x!! in area.corner1.x..area.corner2.x && it.y!! in area.corner1.y..area.corner2.y }.sortedWith(compareBy({ it.trackedDeviceId }, {it.createdAt}))
+            area.customerCount = areaTrackingPoints.distinctBy { it.trackedDeviceId }.count()
 
             if (areaTrackingPoints.isNotEmpty()) {
                 area.dwellTime = calculateDwellTime(areaTrackingPoints)

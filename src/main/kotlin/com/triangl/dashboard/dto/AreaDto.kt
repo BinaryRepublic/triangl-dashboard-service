@@ -9,5 +9,8 @@ class AreaDto (
     var corner2: LocationDto,
 
     @ApiModelProperty(notes = "Average Dwell Time in seconds")
-    var dwellTime: Int? = null
+    var dwellTime: Int? = null,
+
+    @ApiModelProperty(notes = "Unique Customers in the timeframe in this area")
+    var customerCount: Int? = null
 )
