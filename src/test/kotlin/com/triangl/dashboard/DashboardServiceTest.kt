@@ -190,7 +190,7 @@ class DashboardServiceTest {
         val result = dashboardService.getVisitorCountByTimeOfDayAverage(visitorByTimeAverageReqDto)
 
         /* Then */
-        assertThat(result.size).isEqualTo(5)
+        assertThat(result.size).isEqualTo(7)
         val dayWithData = result.find {
             it.day == instantHelper
                     .toLocalDateTime(from)

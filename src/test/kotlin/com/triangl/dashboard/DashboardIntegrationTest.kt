@@ -102,11 +102,13 @@ class DashboardIntegrationTest {
                 .then()
                 .log().ifValidationFails()
                 .statusCode(HttpStatus.OK.value())
-                .body("size()", `is`(5))
+                .body("size()", `is`(7))
                 .body("[0].values", hasSize<VisitorAverageTimeframeDto>(24))
                 .body("[1].values", hasSize<VisitorAverageTimeframeDto>(24))
                 .body("[2].values", hasSize<VisitorAverageTimeframeDto>(24))
                 .body("[3].values", hasSize<VisitorAverageTimeframeDto>(24))
                 .body("[4].values", hasSize<VisitorAverageTimeframeDto>(24))
+                .body("[5].values", hasSize<VisitorAverageTimeframeDto>(24))
+                .body("[6].values", hasSize<VisitorAverageTimeframeDto>(24))
     }
 }
