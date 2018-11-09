@@ -90,7 +90,7 @@ class DashboardService (
 
     fun getVisitorCountByTimeOfDayAverage(visitorByTimeAverageReqDtoObj: VisitorByTimeAverageReqDto): ArrayList<VisitorByTimeAverageRespDto> {
         val data = googleSQLWs.selectAllDeviceIdInTimeframe(visitorByTimeAverageReqDtoObj.customerId, visitorByTimeAverageReqDtoObj.from, visitorByTimeAverageReqDtoObj.to)
-        val weekDays = arrayListOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
+        val weekDays = DayOfWeek.values()
         val response = ArrayList<VisitorByTimeAverageRespDto>()
         val countedWeekDays = weekDayCountService.countWeekdaysInTimeFrame(LocalDateTime.ofInstant(Instant.parse(visitorByTimeAverageReqDtoObj.from), ZoneOffset.UTC),
                                                                                                      LocalDateTime.ofInstant(Instant.parse(visitorByTimeAverageReqDtoObj.to), ZoneOffset.UTC))
