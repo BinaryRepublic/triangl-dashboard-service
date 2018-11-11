@@ -47,12 +47,10 @@ class DashboardService (
     fun getVisitorsDurationByArea(visitorAreaDurationReqDtoObj: VisitorAreaDurationReqDto): List<AreaDto> {
         val data = googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframe(visitorAreaDurationReqDtoObj.mapId, visitorAreaDurationReqDtoObj.from, visitorAreaDurationReqDtoObj.to)
 
-        val respData = ArrayList<AreaDto>()
-
-        for (area in visitorAreaDurationReqDtoObj.areaDtos) {
+        return visitorAreaDurationReqDtoObj.areaDtos.map { area ->
             val areaTrackingPoints = data.filter {
-                it.coordinate!!.x!! in area.corner1.x..area.corner2.x
-                && it.coordinate!!.y!! in area.corner1.y..area.corner2.y
+                it.coordinate!!.x!! in area.corner1!!.x..area.corner2!!.x
+                && it.coordinate!!.y!! in area.corner1!!.y..area.corner2!!.y
             }.sortedWith(
                 compareBy(
                     {it.trackedDeviceId},
@@ -66,10 +64,31 @@ class DashboardService (
             } else {
                 area.dwellTime = 0
             }
-            respData.add(area)
+            area
         }
+    }
 
-        return respData
+    fun getVisitorsDurationByPolygon(visitorAreaDurationReqDtoObj: VisitorAreaDurationReqDto): List<AreaDto> {
+        val data = googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframe(visitorAreaDurationReqDtoObj.mapId, visitorAreaDurationReqDtoObj.from, visitorAreaDurationReqDtoObj.to)
+
+        return visitorAreaDurationReqDtoObj.areaDtos.map {area ->
+            val trackingPointsInPolygon = data.filter {
+                area.corners!!.contains(it.coordinate!!.x!!.toInt(), it.coordinate!!.y!!.toInt())
+            }.sortedWith(
+                compareBy(
+                    {it.trackedDeviceId},
+                    {it.timestamp}
+                )
+            )
+            area.customerCount = trackingPointsInPolygon.distinctBy { it.trackedDeviceId }.count()
+
+            if (trackingPointsInPolygon.isNotEmpty()) {
+                area.dwellTime = calculateDwellTime(trackingPointsInPolygon)
+            } else {
+                area.dwellTime = 0
+            }
+            area
+        }
     }
 
     fun calculateDwellTime(areaTrackingPoints: List<TrackingPointCoordinateJoin>): Int {
