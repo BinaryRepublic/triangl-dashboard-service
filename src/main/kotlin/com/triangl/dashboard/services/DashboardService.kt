@@ -51,8 +51,8 @@ class DashboardService (
 
         for (area in visitorAreaDurationReqDtoObj.areaDtos) {
             val areaTrackingPoints = data.filter {
-                it.coordinate!!.x!! in area.corner1.x..area.corner2.x
-                && it.coordinate!!.y!! in area.corner1.y..area.corner2.y
+                it.coordinate!!.x!! in area.corner1!!.x..area.corner2!!.x
+                && it.coordinate!!.y!! in area.corner1!!.y..area.corner2!!.y
             }.sortedWith(
                 compareBy(
                     {it.trackedDeviceId},
@@ -79,7 +79,7 @@ class DashboardService (
 
         for (area in visitorAreaDurationReqDtoObj.areaDtos) {
             val trackingPointsInPolygon = data.filter {
-                area.corners!!.contains(it.x!!.toInt(), it.y!!.toInt())
+                area.corners!!.contains(it.coordinate!!.x!!.toInt(), it.coordinate!!.y!!.toInt())
             }.sortedWith(
                 compareBy(
                     {it.trackedDeviceId},
