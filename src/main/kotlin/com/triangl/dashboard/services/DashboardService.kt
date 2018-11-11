@@ -47,9 +47,7 @@ class DashboardService (
     fun getVisitorsDurationByArea(visitorAreaDurationReqDtoObj: VisitorAreaDurationReqDto): List<AreaDto> {
         val data = googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframe(visitorAreaDurationReqDtoObj.mapId, visitorAreaDurationReqDtoObj.from, visitorAreaDurationReqDtoObj.to)
 
-        val respData = ArrayList<AreaDto>()
-
-        for (area in visitorAreaDurationReqDtoObj.areaDtos) {
+        return visitorAreaDurationReqDtoObj.areaDtos.map { area ->
             val areaTrackingPoints = data.filter {
                 it.coordinate!!.x!! in area.corner1!!.x..area.corner2!!.x
                 && it.coordinate!!.y!! in area.corner1!!.y..area.corner2!!.y
@@ -66,18 +64,14 @@ class DashboardService (
             } else {
                 area.dwellTime = 0
             }
-            respData.add(area)
+            area
         }
-
-        return respData
     }
 
     fun getVisitorsDurationByPolygon(visitorAreaDurationReqDtoObj: VisitorAreaDurationReqDto): List<AreaDto> {
         val data = googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframe(visitorAreaDurationReqDtoObj.mapId, visitorAreaDurationReqDtoObj.from, visitorAreaDurationReqDtoObj.to)
 
-        val respData = ArrayList<AreaDto>()
-
-        for (area in visitorAreaDurationReqDtoObj.areaDtos) {
+        return visitorAreaDurationReqDtoObj.areaDtos.map {area ->
             val trackingPointsInPolygon = data.filter {
                 area.corners!!.contains(it.coordinate!!.x!!.toInt(), it.coordinate!!.y!!.toInt())
             }.sortedWith(
@@ -93,10 +87,8 @@ class DashboardService (
             } else {
                 area.dwellTime = 0
             }
-            respData.add(area)
+            area
         }
-
-        return respData
     }
 
     fun calculateDwellTime(areaTrackingPoints: List<TrackingPointCoordinateJoin>): Int {
