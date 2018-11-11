@@ -19,7 +19,7 @@ class DashboardController (
     @PostMapping("/count")
     fun countVisitorsByTimeframe(@RequestBody visitorCountReqDtoObj: VisitorCountReqDto): ResponseEntity<*> {
 
-        val visitorCountResp =  dashboardService.countVisitorsByTimeframe(visitorCountReqDtoObj)
+        val visitorCountResp =  dashboardService.visitorsDuringTimeframe(visitorCountReqDtoObj)
 
         return ResponseEntity.ok().body(visitorCountResp)
     }

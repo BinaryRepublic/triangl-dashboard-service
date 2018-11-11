@@ -1,14 +1,21 @@
 package com.triangl.dashboard.entity
 
 import java.time.LocalDateTime
-import javax.persistence.Basic
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.Id
+import javax.persistence.Table
 
+@Entity
+@Table(name = "TrackingPoint")
+open class TrackingPoint {
+    @Id
+    var id: String? = null
 
-class TrackingPoint {
+    @Column(name = "trackedDeviceId")
     var trackedDeviceId: String? = null
 
     var coordinateId: String? = null
 
-    @Basic
-    var createdAt: LocalDateTime? = null
+    var timestamp: LocalDateTime? = null
 }

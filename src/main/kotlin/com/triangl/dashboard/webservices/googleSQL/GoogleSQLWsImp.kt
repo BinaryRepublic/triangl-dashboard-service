@@ -2,37 +2,37 @@ package com.triangl.dashboard.webservices.googleSQL
 
 import com.triangl.dashboard.entity.TrackingPoint
 import com.triangl.dashboard.projection.TrackingPointCoordinateJoin
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
-import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Service
+import java.time.Instant
+import java.time.LocalDateTime
 
 
 @Service
 @Profile("production")
-class GoogleSQLWsImp: GoogleSQLWs {
+class GoogleSQLWsImp (
+    val trackingPointRepository: TrackingPointRepository,
+    val trackingPointCoordinateJoinRepository: TrackingPointCoordinateJoinRepository
+): GoogleSQLWs {
 
-    @Autowired
-    var jdbcTemplate: JdbcTemplate? = null
-
-    override fun countDistinctDeviceIdsInTimeFrame(customerId: String, start: String, end: String): Int {
-        return jdbcTemplate!!.queryForObject("SELECT COUNT(DISTINCT(trackedDeviceId)) FROM TrackingPoint WHERE timestamp > ? AND timestamp < ?", Long::class.java, start, end).toString().toInt()
+    override fun countDistinctDeviceIdsInTimeFrame(customerId: String, start: Instant, end: Instant): Int {
+        return trackingPointRepository.countDistinctOnTrackedDeviceIdByTimestampBetween(
+                start = start,
+                end = end
+        )
     }
 
-    override fun selectAllDeviceIdWithCoordinateInTimeframe(mapId: String, start: String, end: String): List<TrackingPointCoordinateJoin> {
-        return jdbcTemplate!!.query("SELECT TrackingPoint.trackedDeviceId, Coordinate.x, Coordinate.y, TrackingPoint.timestamp FROM TrackingPoint INNER JOIN Coordinate on TrackingPoint.coordinateId = Coordinate.id WHERE timestamp > ? AND timestamp < ?", arrayOf(start, end)) {
-            rs, _ -> TrackingPointCoordinateJoin().apply { trackedDeviceId = rs.getString("TrackingPoint.trackedDeviceId")
-                                                           x = rs.getFloat("Coordinate.x")
-                                                           y = rs.getFloat("Coordinate.y")
-                                                           createdAt = rs.getTimestamp("TrackingPoint.timestamp").toInstant().toString() }
-        }
+    override fun selectAllDeviceIdWithCoordinateInTimeframe(mapId: String, start: Instant, end: Instant): List<TrackingPointCoordinateJoin> {
+        return trackingPointCoordinateJoinRepository.findByTimestampBetween(
+                start = start,
+                end = end
+        )
     }
 
-    override fun selectAllDeviceIdInTimeframe(mapId: String, start: String, end: String): List<TrackingPoint> {
-        return jdbcTemplate!!.query("SELECT id, trackedDeviceId, coordinateId, timestamp FROM TrackingPoint WHERE timestamp > ? AND timestamp < ?", arrayOf(start, end)) {
-            rs, _ -> TrackingPoint().apply { trackedDeviceId = rs.getString("trackedDeviceId")
-                                    coordinateId = rs.getString("coordinateId")
-                                    createdAt = rs.getTimestamp("timestamp").toLocalDateTime() }
-        }
+    override fun selectAllDeviceIdInTimeframe(mapId: String, start: LocalDateTime, end: LocalDateTime): List<TrackingPoint> {
+        return trackingPointRepository.findByTimestampBetween(
+            start = start,
+            end = end
+        )
     }
 }
