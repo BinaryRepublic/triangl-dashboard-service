@@ -1,6 +1,6 @@
 package com.triangl.dashboard.entity
 
-import java.time.LocalDateTime
+import java.time.Instant
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
@@ -17,5 +17,5 @@ open class TrackingPoint {
 
     var coordinateId: String? = null
 
-    var timestamp: LocalDateTime? = null
+    var timestamp: Instant? = null
 }

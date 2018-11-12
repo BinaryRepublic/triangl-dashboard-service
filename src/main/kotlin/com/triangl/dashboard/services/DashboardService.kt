@@ -24,11 +24,25 @@ class DashboardService (
         for (index: Int in 0..(visitorCountReqDtoObj.dataPointCount - 1)) {
             val newFrom = totalTimeFrame.from.plusNanos(sliceSize * index)
             val newTo = totalTimeFrame.from.plusNanos((sliceSize * (index + 1)) - 1)
-            val newCount = googleSQLWs.countDistinctDeviceIdsInTimeFrame(
-                visitorCountReqDtoObj.customerId,
-                newFrom,
-                newTo
-            )
+
+            val newCount = if (visitorCountReqDtoObj.area != null) {
+                googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframe(
+                    visitorCountReqDtoObj.customerId,
+                    newFrom,
+                    newTo
+                ).filter {
+                    visitorCountReqDtoObj.area!!.contains(it.coordinate!!)
+                }.distinctBy {
+                    it.trackedDeviceId
+                }.count()
+
+            } else {
+                googleSQLWs.countDistinctDeviceIdsInTimeFrame(
+                    visitorCountReqDtoObj.customerId,
+                    newFrom,
+                    newTo
+                )
+            }
 
             visitorCountResp.data.add(
                 VisitorCountTimeframeDto(
@@ -39,7 +53,24 @@ class DashboardService (
             )
         }
 
-        visitorCountResp.total = googleSQLWs.countDistinctDeviceIdsInTimeFrame(visitorCountReqDtoObj.customerId, visitorCountReqDtoObj.from, visitorCountReqDtoObj.to)
+        visitorCountResp.total = if (visitorCountReqDtoObj.area != null) {
+            googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframe(
+                visitorCountReqDtoObj.customerId,
+                visitorCountReqDtoObj.from,
+                visitorCountReqDtoObj.to
+            ).filter {
+                visitorCountReqDtoObj.area!!.contains(it.coordinate!!)
+            }.distinctBy {
+                it.trackedDeviceId
+            }.count()
+
+        } else {
+            googleSQLWs.countDistinctDeviceIdsInTimeFrame(
+                visitorCountReqDtoObj.customerId,
+                visitorCountReqDtoObj.from,
+                visitorCountReqDtoObj.to
+            )
+        }
 
         return visitorCountResp
     }
@@ -49,8 +80,7 @@ class DashboardService (
 
         return visitorAreaDurationReqDtoObj.areaDtos.map { area ->
             val areaTrackingPoints = data.filter {
-                it.coordinate!!.x!! in area.corner1!!.x..area.corner2!!.x
-                && it.coordinate!!.y!! in area.corner1!!.y..area.corner2!!.y
+                area.contains(it.coordinate!!)
             }.sortedWith(
                 compareBy(
                     {it.trackedDeviceId},
@@ -68,29 +98,6 @@ class DashboardService (
         }
     }
 
-    fun getVisitorsDurationByPolygon(visitorAreaDurationReqDtoObj: VisitorAreaDurationReqDto): List<AreaDto> {
-        val data = googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframe(visitorAreaDurationReqDtoObj.mapId, visitorAreaDurationReqDtoObj.from, visitorAreaDurationReqDtoObj.to)
-
-        return visitorAreaDurationReqDtoObj.areaDtos.map {area ->
-            val trackingPointsInPolygon = data.filter {
-                area.corners!!.contains(it.coordinate!!.x!!.toInt(), it.coordinate!!.y!!.toInt())
-            }.sortedWith(
-                compareBy(
-                    {it.trackedDeviceId},
-                    {it.timestamp}
-                )
-            )
-            area.customerCount = trackingPointsInPolygon.distinctBy { it.trackedDeviceId }.count()
-
-            if (trackingPointsInPolygon.isNotEmpty()) {
-                area.dwellTime = calculateDwellTime(trackingPointsInPolygon)
-            } else {
-                area.dwellTime = 0
-            }
-            area
-        }
-    }
-
     fun calculateDwellTime(areaTrackingPoints: List<TrackingPointCoordinateJoin>): Int {
         var dwellTime = 0
         var dwellCount = 0
@@ -101,7 +108,7 @@ class DashboardService (
 
         for (point in areaTrackingPoints) {
 
-            val rightTimeBorder = lastInstant!!.plusSeconds(30)
+            val rightTimeBorder = lastInstant!!.plusSeconds(90)
 
             if (point.trackedDeviceId != lastDeviceId
              || point.timestamp!! > rightTimeBorder) {
@@ -130,11 +137,17 @@ class DashboardService (
 
     fun getVisitorCountByTimeOfDayAverage(visitorByTimeAverageReqDtoObj: VisitorByTimeAverageReqDto): ArrayList<VisitorByTimeAverageRespDto> {
         val instantHelper = InstantHelper(ZoneOffset.of("+02:00"))
-        val data = googleSQLWs.selectAllDeviceIdInTimeframe(
-                visitorByTimeAverageReqDtoObj.customerId,
-                instantHelper.toLocalDateTime(visitorByTimeAverageReqDtoObj.from),
-                instantHelper.toLocalDateTime(visitorByTimeAverageReqDtoObj.to)
+        var data = googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframeInLocalDateTime(
+            visitorByTimeAverageReqDtoObj.customerId,
+            instantHelper.toLocalDateTime(visitorByTimeAverageReqDtoObj.from),
+            instantHelper.toLocalDateTime(visitorByTimeAverageReqDtoObj.to)
         )
+
+        if (visitorByTimeAverageReqDtoObj.area != null) {
+            data = data.filter {
+                visitorByTimeAverageReqDtoObj.area!!.contains(it.coordinate!!)
+            }
+        }
 
         val weekDays = DayOfWeek.values()
         val response = ArrayList<VisitorByTimeAverageRespDto>()
@@ -146,7 +159,13 @@ class DashboardService (
         for (day in weekDays) {
             val visitorByTimeAverageResp = VisitorByTimeAverageRespDto(day.name.toLowerCase().capitalize())
             for (hour in 0..23) {
-                val elements = data.filter { it.timestamp!!.dayOfWeek == day && it.timestamp!!.hour == hour }.groupBy { it.timestamp!!.dayOfYear }
+                val elements = data.filter {
+                    it.timestamp!!.dayOfWeek == day &&
+                    it.timestamp!!.hour == hour
+                }.groupBy {
+                    it.timestamp!!.dayOfYear
+                }
+
                 var totalVisitors = 0
                 val totalDays = countedWeekDays.getOrDefault(day, 0)
 
