@@ -137,29 +137,31 @@ class DashboardService (
 
     fun getVisitorCountByTimeOfDayAverage(visitorByTimeAverageReqDtoObj: VisitorByTimeAverageReqDto): ArrayList<VisitorByTimeAverageRespDto> {
         val instantHelper = InstantHelper(ZoneOffset.of("+02:00"))
-        var data = googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframeInLocalDateTime(
+        val allDataPoints = googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframeInLocalDateTime(
             visitorByTimeAverageReqDtoObj.customerId,
             instantHelper.toLocalDateTime(visitorByTimeAverageReqDtoObj.from),
             instantHelper.toLocalDateTime(visitorByTimeAverageReqDtoObj.to)
         )
 
-        if (visitorByTimeAverageReqDtoObj.area != null) {
-            data = data.filter {
+        val areaFilteredDataPoints = if (visitorByTimeAverageReqDtoObj.area != null) {
+            allDataPoints.filter {
                 visitorByTimeAverageReqDtoObj.area!!.contains(it.coordinate!!)
             }
+        } else {
+            allDataPoints
         }
 
         val weekDays = DayOfWeek.values()
         val response = ArrayList<VisitorByTimeAverageRespDto>()
         val countedWeekDays = weekDayCountService.occurrencesOfWeekDaysInTimeframe(
-                instantHelper.toLocalDateTime(visitorByTimeAverageReqDtoObj.from).toLocalDate(),
-                instantHelper.toLocalDateTime(visitorByTimeAverageReqDtoObj.to).toLocalDate()
+            instantHelper.toLocalDateTime(visitorByTimeAverageReqDtoObj.from).toLocalDate(),
+            instantHelper.toLocalDateTime(visitorByTimeAverageReqDtoObj.to).toLocalDate()
         )
 
         for (day in weekDays) {
             val visitorByTimeAverageResp = VisitorByTimeAverageRespDto(day.name.toLowerCase().capitalize())
             for (hour in 0..23) {
-                val elements = data.filter {
+                val elementsOnWeekDayInTimeframe = areaFilteredDataPoints.filter {
                     it.timestamp!!.dayOfWeek == day &&
                     it.timestamp!!.hour == hour
                 }.groupBy {
@@ -170,7 +172,7 @@ class DashboardService (
                 val totalDays = countedWeekDays.getOrDefault(day, 0)
 
 
-                for ((_, value) in elements) {
+                for ((_, value) in elementsOnWeekDayInTimeframe) {
                     val uniqueDeviceID = value.distinctBy { it.trackedDeviceId }
                     totalVisitors += uniqueDeviceID.size
                 }
