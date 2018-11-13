@@ -15,7 +15,9 @@ class AreaDto (
     var dwellTime: Int? = null,
 
     @ApiModelProperty(notes = "Unique Customers in the timeframe in this area")
-    var customerCount: Int? = null
+    var customerCount: Int? = null,
+
+    var percentageOfAllVisitors: Float? = null
 ) {
     fun contains(location: Coordinate): Boolean {
         return if (corners != null) {

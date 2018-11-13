@@ -196,4 +196,31 @@ class DashboardService (
 
         return response
     }
+
+    fun getHowManyPercentOfVisitorsVisitedGivenArea (visitorAreaDurationReqDto: VisitorAreaDurationReqDto): List<AreaDto> {
+        val data = googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframe(
+            visitorAreaDurationReqDto.mapId,
+            visitorAreaDurationReqDto.from,
+            visitorAreaDurationReqDto.to
+        )
+
+        val totalAmountOfVisitors = data.distinctBy {
+            it.trackedDeviceId
+        }.count().toFloat()
+
+        return visitorAreaDurationReqDto.areaDtos.map {area ->
+            val amountOfVisitorsInArea = data.filter {
+                area.contains(it.coordinate!!)
+            }.distinctBy {
+                it.trackedDeviceId
+            }.count()
+
+            if (amountOfVisitorsInArea > 0) {
+                area.percentageOfAllVisitors = amountOfVisitorsInArea / totalAmountOfVisitors
+            } else {
+                area.percentageOfAllVisitors = 0f
+            }
+            area
+        }
+    }
 }
