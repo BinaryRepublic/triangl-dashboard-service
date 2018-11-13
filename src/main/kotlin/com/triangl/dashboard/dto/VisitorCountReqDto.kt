@@ -15,5 +15,9 @@ class VisitorCountReqDto (
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     var to: Instant,
 
+    @ApiModelProperty(notes = "(Optional) Calculate for this given Area")
+    var area: AreaDto? = null,
+
+    @ApiModelProperty(notes = "The amount of measured DataPoints in between the Start and End Instant")
     var dataPointCount: Int
 )

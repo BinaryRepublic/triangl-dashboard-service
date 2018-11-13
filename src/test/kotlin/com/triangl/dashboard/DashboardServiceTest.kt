@@ -4,9 +4,9 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.given
 import com.triangl.dashboard.dto.*
 import com.triangl.dashboard.entity.Coordinate
-import com.triangl.dashboard.entity.TrackingPoint
 import com.triangl.dashboard.helper.InstantHelper
 import com.triangl.dashboard.projection.TrackingPointCoordinateJoin
+import com.triangl.dashboard.projection.TrackingPointLocalDateTimeCoordinateJoin
 import com.triangl.dashboard.services.DashboardService
 import com.triangl.dashboard.services.WeekDayCountService
 import com.triangl.dashboard.webservices.googleSQL.GoogleSQLWs
@@ -42,40 +42,60 @@ class DashboardServiceTest {
 
     private val to = from.plus(9, ChronoUnit.DAYS)
 
+    private val polygonArea = PolygonDto(
+        listOf(
+            LocationDto(x = 0f, y = 0f),
+            LocationDto(x = 10f, y = 0f),
+            LocationDto(x = 10f, y = 10f),
+            LocationDto(x = 0f, y = 10f)
+        )
+    )
+
     private val timestampsToCreate = listOf(
-        from,
-        from.plusSeconds(20),
+        from.plusSeconds(3600),
+        from.plusSeconds(3630),
         from.plusSeconds(40),
         from,
-        from.plusSeconds(30)
+        from.plusSeconds(20)
     )
     private val coordinatesToCreate = listOf(
         Coordinate().apply { id = "1"; x = 10f; y = 20f },
-        Coordinate().apply { id = "2"; x = 10f; y = 20f },
-        Coordinate().apply { id = "3"; x = 20f; y = 30f },
-        Coordinate().apply { id = "4"; x = 10f; y = 20f },
-        Coordinate().apply { id = "5"; x = 10f; y = 20f }
+        Coordinate().apply { id = "2"; x = 11f; y = 10f },
+        Coordinate().apply { id = "3"; x = 1f; y = 0f },
+        Coordinate().apply { id = "4"; x = 5f; y = 10f },
+        Coordinate().apply { id = "5"; x = 7f; y = 8f }
     )
     private val trackedDeviceIdsToCreate = listOf("1", "1", "2", "2", "2")
 
     @Test
-    fun `should return visitorsDuringTimeFrame`() {
+    fun `should return visitorsDuringTimeFrame for given area`() {
         /* Given */
         val dataPointCount = 3
         val visitorCountReqDto = VisitorCountReqDto(
-                customerId = "CustomerId",
-                from = from,
-                to = from.plus(
-                    dataPointCount.toLong(),
-                    ChronoUnit.HOURS),
-                dataPointCount = dataPointCount
+            customerId = "CustomerId",
+            from = from,
+            to = from.plus(
+                dataPointCount.toLong(),
+                ChronoUnit.HOURS),
+            dataPointCount = dataPointCount,
+            area = AreaDto(
+                corners = polygonArea
+            )
         )
 
-        given(googleSQLWs.countDistinctDeviceIdsInTimeFrame(
-                anyString(),
-                any(),
-                any()
-        )).willReturn(2)
+        given(googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframe(
+            anyString(),
+            any(),
+            any()
+        )).willReturn(
+            trackedDeviceIdsToCreate.mapIndexed { index, deviceId ->
+                TrackingPointCoordinateJoin().apply {
+                    coordinate = coordinatesToCreate[index]
+                    trackedDeviceId = deviceId
+                    timestamp = timestampsToCreate[index]
+                }
+            }
+        )
 
         /* When */
         val result = dashboardService.visitorsDuringTimeframe(visitorCountReqDto)
@@ -86,20 +106,20 @@ class DashboardServiceTest {
                 VisitorCountTimeframeDto(
                     from = "2018-10-10T09:00:00Z",
                     to = "2018-10-10T09:59:59.999999999Z",
-                    count = 2
+                    count = 1
                 ),
                 VisitorCountTimeframeDto(
                     from = "2018-10-10T10:00:00Z",
                     to = "2018-10-10T10:59:59.999999999Z",
-                    count = 2
+                    count = 1
                 ),
                 VisitorCountTimeframeDto(
                     from = "2018-10-10T11:00:00Z",
                     to = "2018-10-10T11:59:59.999999999Z",
-                    count = 2
+                    count = 1
                 )
             ),
-            total = 2
+            total = 1
         )
 
         assertThat(result.total)        .isEqualTo(expectedResult.total)
@@ -148,17 +168,17 @@ class DashboardServiceTest {
         val result = dashboardService.getVisitorsDurationByArea(visitorAreaDurationReqDto)
 
         /* Then */
-        assertThat(result[0].dwellTime).isEqualTo(25)
+        assertThat(result[0].dwellTime).isEqualTo(35)
         assertThat(result[1].dwellTime).isEqualTo(0)
     }
 
     @Test
-    fun `should return average visitor count per time of day per weekday`() {
+    fun `should return average visitor count per time of day per weekday for given area`() {
         /* Given */
-        val dbTrackingPointList = arrayListOf<TrackingPoint>()
+        val dbTrackingPointList = arrayListOf<TrackingPointLocalDateTimeCoordinateJoin>()
         for (index in 0..trackedDeviceIdsToCreate.lastIndex) {
-            dbTrackingPointList.add(TrackingPoint().apply {
-                coordinateId = coordinatesToCreate[index].id
+            dbTrackingPointList.add(TrackingPointLocalDateTimeCoordinateJoin().apply {
+                coordinate = coordinatesToCreate[index]
                 trackedDeviceId = trackedDeviceIdsToCreate[index]
                 timestamp = LocalDateTime.ofInstant(timestampsToCreate[index], ZoneId.of("Europe/Berlin"))
             })
@@ -167,25 +187,29 @@ class DashboardServiceTest {
         val visitorByTimeAverageReqDto = VisitorByTimeAverageReqDto(
             customerId = "customer1",
             from = from,
-            to = to
+            to = to,
+            area = AreaDto(
+                corners = polygonArea
+            )
         )
 
         val occurrencesOfWeekDaysInTimeframe = hashMapOf(
-                DayOfWeek.MONDAY to 1,
-                DayOfWeek.TUESDAY to 1,
-                DayOfWeek.WEDNESDAY to 2,
-                DayOfWeek.THURSDAY to 2,
-                DayOfWeek.FRIDAY to 2,
-                DayOfWeek.SATURDAY to 1,
-                DayOfWeek.SUNDAY to 1
+            DayOfWeek.MONDAY to 1,
+            DayOfWeek.TUESDAY to 1,
+            DayOfWeek.WEDNESDAY to 2,
+            DayOfWeek.THURSDAY to 2,
+            DayOfWeek.FRIDAY to 2,
+            DayOfWeek.SATURDAY to 1,
+            DayOfWeek.SUNDAY to 1
         )
 
         given(weekDayCountService.occurrencesOfWeekDaysInTimeframe(any(), any())).willReturn(occurrencesOfWeekDaysInTimeframe)
-        given(googleSQLWs.selectAllDeviceIdInTimeframe(
+        given(googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframeInLocalDateTime(
             anyString(),
             any(),
             any())
         ).willReturn(dbTrackingPointList)
+
         /* When */
         val result = dashboardService.getVisitorCountByTimeOfDayAverage(visitorByTimeAverageReqDto)
 
@@ -193,11 +217,11 @@ class DashboardServiceTest {
         assertThat(result.size).isEqualTo(7)
         val dayWithData = result.find {
             it.day == instantHelper
-                    .toLocalDateTime(from)
-                    .dayOfWeek
-                    .toString()
-                    .toLowerCase()
-                    .capitalize()
+                .toLocalDateTime(from)
+                .dayOfWeek
+                .toString()
+                .toLowerCase()
+                .capitalize()
         }
         assertThat(result)
         assertThat(

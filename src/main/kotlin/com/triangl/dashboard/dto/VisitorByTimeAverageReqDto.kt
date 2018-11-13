@@ -13,5 +13,8 @@ class VisitorByTimeAverageReqDto (
 
     @ApiModelProperty(notes = "TimestampString in GMT+00:00 format")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    var to: Instant
+    var to: Instant,
+
+    @ApiModelProperty(notes = "(Optional) Calculate for this given Area")
+    var area: AreaDto? = null
 )

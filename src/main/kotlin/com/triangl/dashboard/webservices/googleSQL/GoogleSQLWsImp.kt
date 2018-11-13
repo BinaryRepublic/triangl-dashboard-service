@@ -2,6 +2,10 @@ package com.triangl.dashboard.webservices.googleSQL
 
 import com.triangl.dashboard.entity.TrackingPoint
 import com.triangl.dashboard.projection.TrackingPointCoordinateJoin
+import com.triangl.dashboard.projection.TrackingPointLocalDateTimeCoordinateJoin
+import com.triangl.dashboard.repository.TrackingPointCoordinateJoinRepository
+import com.triangl.dashboard.repository.TrackingPointLocalDateTimeCoordinateJoinRepository
+import com.triangl.dashboard.repository.TrackingPointRepository
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import java.time.Instant
@@ -11,8 +15,9 @@ import java.time.LocalDateTime
 @Service
 @Profile("production")
 class GoogleSQLWsImp (
-    val trackingPointRepository: TrackingPointRepository,
-    val trackingPointCoordinateJoinRepository: TrackingPointCoordinateJoinRepository
+        val trackingPointRepository: TrackingPointRepository,
+        val trackingPointInLocalDateTimeRepository: TrackingPointLocalDateTimeCoordinateJoinRepository,
+        val trackingPointCoordinateJoinRepository: TrackingPointCoordinateJoinRepository
 ): GoogleSQLWs {
 
     override fun countDistinctDeviceIdsInTimeFrame(customerId: String, start: Instant, end: Instant): Int {
@@ -29,8 +34,15 @@ class GoogleSQLWsImp (
         )
     }
 
-    override fun selectAllDeviceIdInTimeframe(mapId: String, start: LocalDateTime, end: LocalDateTime): List<TrackingPoint> {
+    override fun selectAllDeviceIdInTimeframe(mapId: String, start: Instant, end: Instant): List<TrackingPoint> {
         return trackingPointRepository.findByTimestampBetween(
+                start = start,
+                end = end
+        )
+    }
+
+    override fun selectAllDeviceIdWithCoordinateInTimeframeInLocalDateTime(mapId: String, start: LocalDateTime, end: LocalDateTime): List<TrackingPointLocalDateTimeCoordinateJoin> {
+        return trackingPointInLocalDateTimeRepository.findByTimestampBetween(
             start = start,
             end = end
         )

@@ -31,15 +31,6 @@ class DashboardController (
         return ResponseEntity.ok().body(areaDwellTime)
     }
 
-    @ApiOperation(value = "Get average dwell time for every requested 2D polygon", response = AreaDto::class, responseContainer = "List")
-    @PostMapping("/polygons/duration")
-    fun getVisitorDurationByPolygon(@RequestBody visitorAreaDurationReqDtoObj: VisitorAreaDurationReqDto): ResponseEntity<*> {
-
-        val polygonDwellTime = dashboardService.getVisitorsDurationByPolygon(visitorAreaDurationReqDtoObj)
-
-        return ResponseEntity.ok().body(polygonDwellTime)
-    }
-
     @ApiOperation(value = "Get average Visitor Count by time of Day and by Weekday", response = VisitorByTimeAverageRespDto::class)
     @PostMapping("/byTimeOfDay/average")
     fun getVisitorCountByTimeOfDayAverage(@RequestBody visitorByTimeAverageReqDtoObj: VisitorByTimeAverageReqDto): ResponseEntity<*> {

@@ -1,5 +1,6 @@
 package com.triangl.dashboard.dto
 
+import com.triangl.dashboard.entity.Coordinate
 import io.swagger.annotations.ApiModelProperty
 
 class AreaDto (
@@ -15,4 +16,14 @@ class AreaDto (
 
     @ApiModelProperty(notes = "Unique Customers in the timeframe in this area")
     var customerCount: Int? = null
-)
+) {
+    fun contains(location: Coordinate): Boolean {
+        return if (corners != null) {
+            return (corners!!.contains(location.x!!.toInt(), location.x!!.toInt()))
+        } else if (corner1 != null && corner2 != null) {
+            return (location.x!! in corner1!!.x..corner2!!.x && location.y!! in corner1!!.y..corner2!!.y)
+        } else {
+            false
+        }
+    }
+}
