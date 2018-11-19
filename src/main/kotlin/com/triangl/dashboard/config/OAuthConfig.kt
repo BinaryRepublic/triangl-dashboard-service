@@ -23,6 +23,18 @@ class OAuthConfig : WebSecurityConfigurerAdapter() {
     @Value(value = "\${auth0.issuer}")
     private val issuer: String? = null
 
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource {
+        val configuration = CorsConfiguration()
+        configuration.allowedOrigins = listOf("*")
+        configuration.allowedMethods = listOf("GET", "POST", "OPTIONS")
+        configuration.allowCredentials = true
+        configuration.addAllowedHeader("Authorization")
+        val source = UrlBasedCorsConfigurationSource()
+        source.registerCorsConfiguration("/**", configuration)
+        return source
+    }
+
     @Throws(Exception::class)
     override fun configure(http: HttpSecurity) {
         JwtWebSecurityConfigurer
