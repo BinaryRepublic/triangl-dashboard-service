@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@CrossOrigin
 @RequestMapping("/visitors", produces = [MediaType.APPLICATION_JSON_UTF8_VALUE])
 class DashboardController (
     val dashboardService: DashboardService
