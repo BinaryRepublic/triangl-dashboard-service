@@ -28,7 +28,7 @@ class DashboardIntegrationTest {
     }
 
     @Test
-    fun `should return a list of timeframe's with their visitorCount`() {
+    fun `should return a list of timeframes with their visitorCount`() {
         val jsonPayload = "{ " +
             "\"customerId\": \"customer1\"," +
             "\"from\": \"2018-10-10T09:00:00Z\"," +
@@ -49,7 +49,7 @@ class DashboardIntegrationTest {
     }
 
     @Test
-    fun `should return visitor's average dwell time per given are`() {
+    fun `should return visitors average dwell time per given area`() {
         val jsonPayload = "{ " +
             "\"mapId\": \"map1\"," +
             "\"from\": \"2018-10-10T09:00:00Z\"," +
