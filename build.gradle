@@ -47,24 +47,24 @@ ext {
 }
 
 dependencies {
-    compile('org.springframework.boot:spring-boot-starter-web')
-    compile('org.springframework.boot:spring-boot-starter-data-jpa')
-    compile('org.springframework.cloud:spring-cloud-gcp-starter')
-    compile('org.springframework.cloud:spring-cloud-gcp-starter-sql-mysql')
-    compile('com.fasterxml.jackson.module:jackson-module-kotlin')
-    compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    compile("org.jetbrains.kotlin:kotlin-reflect")
-    compile("io.springfox:springfox-swagger2:2.9.2")
-    compile("io.springfox:springfox-swagger-ui:2.9.2")
-    compile("org.hibernate:hibernate-core:5.3.6.Final")
-    compile ('io.sentry:sentry-spring:1.7.10')
-    compile ('io.sentry:sentry-logback:1.7.13')
-    compile("org.springframework:spring-jdbc")
-    compile('com.auth0:auth0-spring-security-api:1.1.0')
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.cloud:spring-cloud-gcp-starter")
+    implementation("org.springframework.cloud:spring-cloud-gcp-starter-sql-mysql")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("io.springfox:springfox-swagger2:2.9.2")
+    implementation("io.springfox:springfox-swagger-ui:2.9.2")
+    implementation("org.hibernate:hibernate-core:5.3.6.Final")
+    implementation("io.sentry:sentry-spring:1.7.10")
+    implementation("io.sentry:sentry-logback:1.7.13")
+    implementation("org.springframework:spring-jdbc")
+    implementation("com.auth0:auth0-spring-security-api:1.1.0")
 
-    testCompile('org.springframework.boot:spring-boot-starter-test')
-    testCompile('com.nhaarman:mockito-kotlin:1.6.0')
-    testCompile('io.rest-assured:rest-assured:3.0.2')
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("com.nhaarman:mockito-kotlin:1.6.0")
+    testImplementation("io.rest-assured:rest-assured:3.0.2")
 }
 
 dependencyManagement {
