@@ -1,8 +1,10 @@
 package com.triangl.dashboard.dto
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.triangl.dashboard.entity.Coordinate
 import io.swagger.annotations.ApiModelProperty
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class AreaDto (
 
     var corner1: LocationDto? = null,
@@ -15,7 +17,9 @@ class AreaDto (
     var dwellTime: Int? = null,
 
     @ApiModelProperty(notes = "Unique Customers in the timeframe in this area")
-    var customerCount: Int? = null
+    var customerCount: Int? = null,
+
+    var percentageOfAllVisitors: Float? = null
 ) {
     fun contains(location: Coordinate): Boolean {
         return if (corners != null) {

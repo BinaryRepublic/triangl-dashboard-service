@@ -228,4 +228,42 @@ class DashboardServiceTest {
             dayWithData!!.values.filter { it.average > 0 }.size
         ).isEqualTo(1)
     }
+
+    @Test
+    fun `should return how many percent of the visitors visited the given area`() {
+        /* Given */
+        val dbTrackingPointList = arrayListOf<TrackingPointCoordinateJoin>()
+        for (index in 0..trackedDeviceIdsToCreate.lastIndex) {
+            dbTrackingPointList.add(TrackingPointCoordinateJoin().apply {
+                coordinate = coordinatesToCreate[index]
+                trackedDeviceId = trackedDeviceIdsToCreate[index]
+                timestamp = timestampsToCreate[index]
+            })
+        }
+
+        val visitorAreaDurationReqDto = VisitorAreaDurationReqDto(
+            mapId = "1",
+            from = from,
+            to = from.plusSeconds(40),
+            areaDtos = listOf(
+                AreaDto(
+                    corner1 = LocationDto(x = 0F, y = 0F),
+                    corner2 = LocationDto(x = 10F, y = 10F)
+                ),
+                AreaDto(
+                    corner1 = LocationDto(x = 10F, y = 10F),
+                    corner2 = LocationDto(x = 20F, y = 20F)
+                )
+            )
+        )
+
+        given(googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframe(anyString(),any(),any())).willReturn(dbTrackingPointList)
+
+        /* When */
+        val result = dashboardService.getHowManyPercentOfVisitorsVisitedGivenArea(visitorAreaDurationReqDto)
+
+        /* Then */
+        assertThat(result[0].percentageOfAllVisitors).isEqualTo(0.5f)
+        assertThat(result[1].percentageOfAllVisitors).isEqualTo(0.5f)
+    }
 }

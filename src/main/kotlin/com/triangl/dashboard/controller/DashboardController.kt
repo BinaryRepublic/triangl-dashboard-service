@@ -39,4 +39,12 @@ class DashboardController (
         return ResponseEntity.ok().body(visitorByTimeOfDayAverage)
     }
 
+    @ApiOperation(value = "Get percentage of all Visitors who were in the given areas in the given timeframe", response = AreaDto::class, responseContainer = "List")
+    @PostMapping("/areas/percentage")
+    fun getHowManyPercentOfVisitorsVisitedGivenArea(@RequestBody visitorAreaDurationReqDto: VisitorAreaDurationReqDto): ResponseEntity<*> {
+        val visitorPercentageRespDto = dashboardService.getHowManyPercentOfVisitorsVisitedGivenArea(visitorAreaDurationReqDto)
+
+        return ResponseEntity.ok().body(visitorPercentageRespDto)
+    }
+
 }
