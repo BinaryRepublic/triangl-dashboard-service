@@ -10,6 +10,8 @@ open class Coordinate {
     @Id
     var id: String? = null
 
+    var areaId: String? = null
+
     var x: Float? = null
 
     var y: Float? = null

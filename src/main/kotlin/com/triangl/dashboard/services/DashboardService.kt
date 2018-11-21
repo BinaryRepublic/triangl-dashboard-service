@@ -1,6 +1,7 @@
 package com.triangl.dashboard.services
 
 import com.triangl.dashboard.dto.*
+import com.triangl.dashboard.entity.Customer
 import com.triangl.dashboard.helper.InstantHelper
 import com.triangl.dashboard.projection.TrackingPointCoordinateJoin
 import com.triangl.dashboard.webservices.googleSQL.GoogleSQLWs
@@ -199,16 +200,16 @@ class DashboardService (
 
     fun getHowManyPercentOfVisitorsVisitedGivenArea (visitorAreaDurationReqDto: VisitorAreaDurationReqDto): List<AreaDto> {
         val data = googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframe(
-            visitorAreaDurationReqDto.mapId,
-            visitorAreaDurationReqDto.from,
-            visitorAreaDurationReqDto.to
+                visitorAreaDurationReqDto.mapId,
+                visitorAreaDurationReqDto.from,
+                visitorAreaDurationReqDto.to
         )
 
         val totalAmountOfVisitors = data.distinctBy {
             it.trackedDeviceId
         }.count().toFloat()
 
-        return visitorAreaDurationReqDto.areaDtos.map {area ->
+        return visitorAreaDurationReqDto.areaDtos.map { area ->
             val amountOfVisitorsInArea = data.filter {
                 area.contains(it.coordinate!!)
             }.distinctBy {
@@ -222,5 +223,9 @@ class DashboardService (
             }
             area
         }
+    }
+
+    fun getCustomerById(customerId: String): Customer {
+        return googleSQLWs.findCustomerById(customerId)
     }
 }

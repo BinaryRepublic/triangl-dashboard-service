@@ -1,6 +1,7 @@
 package com.triangl.dashboard.webservices.googleSQL
 
 import com.triangl.dashboard.entity.Coordinate
+import com.triangl.dashboard.entity.Customer
 import com.triangl.dashboard.entity.TrackingPoint
 import com.triangl.dashboard.projection.TrackingPointCoordinateJoin
 import com.triangl.dashboard.projection.TrackingPointLocalDateTimeCoordinateJoin
@@ -26,6 +27,10 @@ class GoogleSQLWsMock: GoogleSQLWs {
     val trackingPointCoordinateJoinInLocalDateTime1 = TrackingPointLocalDateTimeCoordinateJoin().apply { trackedDeviceId = "1"; coordinate = Coordinate().apply { x = 1f; y = 2f }; timestamp = LocalDateTime.parse("2018-09-24T07:59:59.996") }
     val trackingPointCoordinateJoinInLocalDateTime2 = TrackingPointLocalDateTimeCoordinateJoin().apply { trackedDeviceId = "2"; coordinate = Coordinate().apply { x = 4f; y = 6f }; timestamp = LocalDateTime.parse("2018-09-24T09:59:59.996") }
     val trackingPointCoordinateJoinInLocalDateTime3 = TrackingPointLocalDateTimeCoordinateJoin().apply { trackedDeviceId = "3"; coordinate = Coordinate().apply { x = 15f; y = 11f }; timestamp = LocalDateTime.parse("2018-09-24T11:59:59.996") }
+
+    override fun findCustomerById(customerId: String): Customer {
+        return Customer().apply { name = "Test" }
+    }
 
     override fun countDistinctDeviceIdsInTimeFrame(customerId: String, start: Instant, end: Instant): Int {
         return listOf(trackingPoint1, trackingPoint2, trackingPoint3).size

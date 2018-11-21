@@ -1,8 +1,10 @@
 package com.triangl.dashboard.webservices.googleSQL
 
+import com.triangl.dashboard.entity.Customer
 import com.triangl.dashboard.entity.TrackingPoint
 import com.triangl.dashboard.projection.TrackingPointCoordinateJoin
 import com.triangl.dashboard.projection.TrackingPointLocalDateTimeCoordinateJoin
+import com.triangl.dashboard.repository.CustomerRepository
 import com.triangl.dashboard.repository.TrackingPointCoordinateJoinRepository
 import com.triangl.dashboard.repository.TrackingPointLocalDateTimeCoordinateJoinRepository
 import com.triangl.dashboard.repository.TrackingPointRepository
@@ -17,8 +19,15 @@ import java.time.LocalDateTime
 class GoogleSQLWsImp (
         val trackingPointRepository: TrackingPointRepository,
         val trackingPointInLocalDateTimeRepository: TrackingPointLocalDateTimeCoordinateJoinRepository,
-        val trackingPointCoordinateJoinRepository: TrackingPointCoordinateJoinRepository
+        val trackingPointCoordinateJoinRepository: TrackingPointCoordinateJoinRepository,
+        val customerRepository: CustomerRepository
 ): GoogleSQLWs {
+
+    override fun findCustomerById(customerId: String): Customer {
+        return customerRepository.findById(
+            customerId
+        )
+    }
 
     override fun countDistinctDeviceIdsInTimeFrame(customerId: String, start: Instant, end: Instant): Int {
         return trackingPointRepository.countDistinctOnTrackedDeviceIdByTimestampBetween(

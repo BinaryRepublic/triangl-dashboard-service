@@ -1,6 +1,7 @@
 package com.triangl.dashboard.controller
 
 import com.triangl.dashboard.dto.*
+import com.triangl.dashboard.entity.Customer
 import com.triangl.dashboard.services.DashboardService
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
@@ -44,6 +45,15 @@ class DashboardController (
         val visitorPercentageRespDto = dashboardService.getHowManyPercentOfVisitorsVisitedGivenArea(visitorAreaDurationReqDto)
 
         return ResponseEntity.ok().body(visitorPercentageRespDto)
+    }
+
+    @ApiOperation(value = "Get customer by ID", response = Customer::class)
+    @GetMapping("/customer/{id}")
+    fun getCustomerById(@PathVariable id: String): ResponseEntity<*> {
+        val customer = dashboardService.getCustomerById(id)
+
+        return ResponseEntity.ok().body(customer)
+
     }
 
 }
