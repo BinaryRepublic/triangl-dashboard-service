@@ -29,7 +29,7 @@ class GoogleSQLWsMock: GoogleSQLWs {
     val trackingPointCoordinateJoinInLocalDateTime3 = TrackingPointLocalDateTimeCoordinateJoin().apply { trackedDeviceId = "3"; coordinate = Coordinate().apply { x = 15f; y = 11f }; timestamp = LocalDateTime.parse("2018-09-24T11:59:59.996") }
 
     override fun findCustomerById(customerId: String): Customer {
-        return Customer().apply { name = "Test" }
+        return Customer().apply { id = customerId; name = customerId + "Name" }
     }
 
     override fun countDistinctDeviceIdsInTimeFrame(customerId: String, start: Instant, end: Instant): Int {

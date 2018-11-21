@@ -111,4 +111,19 @@ class DashboardIntegrationTest {
             .body("[5].values", hasSize<VisitorAverageTimeframeDto>(24))
             .body("[6].values", hasSize<VisitorAverageTimeframeDto>(24))
     }
+
+    @Test
+    fun `should return customer by given id`() {
+        val customerId = "TestCustomer"
+
+        RestAssured
+            .given()
+            .contentType(ContentType.JSON)
+            .get("/visitors/customer/$customerId")
+            .then()
+            .log().ifValidationFails()
+            .statusCode(HttpStatus.OK.value())
+            .body("id", `is`("TestCustomer"))
+            .body("name", `is`("TestCustomerName"))
+    }
 }

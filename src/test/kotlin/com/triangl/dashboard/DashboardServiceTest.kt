@@ -4,6 +4,8 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.given
 import com.triangl.dashboard.dto.*
 import com.triangl.dashboard.entity.Coordinate
+import com.triangl.dashboard.entity.Customer
+import com.triangl.dashboard.entity.Map
 import com.triangl.dashboard.helper.InstantHelper
 import com.triangl.dashboard.projection.TrackingPointCoordinateJoin
 import com.triangl.dashboard.projection.TrackingPointLocalDateTimeCoordinateJoin
@@ -265,5 +267,30 @@ class DashboardServiceTest {
         /* Then */
         assertThat(result[0].percentageOfAllVisitors).isEqualTo(0.5f)
         assertThat(result[1].percentageOfAllVisitors).isEqualTo(0.5f)
+    }
+
+    @Test
+    fun `should return customer by id`() {
+        /* Given */
+        val customer = Customer().apply {
+            id = "TestId"
+            name = "TestName"
+            maps = setOf(
+                    Map().apply {
+                        name = "TestMap"
+                    }
+            )
+        }
+
+
+        given(googleSQLWs.findCustomerById(customer.id!!)).willReturn(customer)
+
+        /* When */
+        val testCustomer = dashboardService.getCustomerById(customerId = customer.id!!)
+
+        /* Then */
+        assertThat(testCustomer.id).isEqualTo(customer.id)
+        assertThat(testCustomer.name).isEqualTo(customer.name)
+        assertThat(testCustomer.maps!!.first().name).isEqualTo(customer.maps!!.first().name)
     }
 }
