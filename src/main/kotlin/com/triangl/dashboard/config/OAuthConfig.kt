@@ -9,9 +9,6 @@ import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.web.cors.CorsConfiguration
-import org.springframework.web.cors.CorsConfigurationSource
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @EnableWebSecurity
 @Configuration
@@ -24,15 +21,8 @@ class OAuthConfig : WebSecurityConfigurerAdapter() {
     private val issuer: String? = null
 
     @Bean
-    fun corsConfigurationSource(): CorsConfigurationSource {
-        val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf("*")
-        configuration.allowedMethods = listOf("GET", "POST", "OPTIONS")
-        configuration.allowCredentials = true
-        configuration.addAllowedHeader("Authorization")
-        val source = UrlBasedCorsConfigurationSource()
-        source.registerCorsConfiguration("/**", configuration)
-        return source
+    fun corsFilter(): CorsFilter {
+        return CorsFilter()
     }
 
     @Throws(Exception::class)
