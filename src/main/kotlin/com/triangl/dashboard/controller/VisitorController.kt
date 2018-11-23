@@ -1,8 +1,7 @@
 package com.triangl.dashboard.controller
 
 import com.triangl.dashboard.dto.*
-import com.triangl.dashboard.entity.Customer
-import com.triangl.dashboard.services.DashboardService
+import com.triangl.dashboard.services.VisitorService
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -10,8 +9,8 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/visitors", produces = [MediaType.APPLICATION_JSON_UTF8_VALUE])
-class DashboardController (
-    val dashboardService: DashboardService
+class VisitorController (
+    val dashboardService: VisitorService
 ) {
     @ApiOperation(value = "Get the amount of unique Visitors in the requested timeframe per timeslice whereby timeslice is timeframe / dataPointCount", response = VisitorCountRespDto::class)
     @PostMapping("/count")
@@ -46,14 +45,4 @@ class DashboardController (
 
         return ResponseEntity.ok().body(visitorPercentageRespDto)
     }
-
-    @ApiOperation(value = "Get customer by ID", response = Customer::class)
-    @GetMapping("/customer/{id}")
-    fun getCustomerById(@PathVariable id: String): ResponseEntity<*> {
-        val customer = dashboardService.getCustomerById(id)
-
-        return ResponseEntity.ok().body(customer)
-
-    }
-
 }

@@ -119,7 +119,7 @@ class DashboardIntegrationTest {
         RestAssured
             .given()
             .contentType(ContentType.JSON)
-            .get("/visitors/customer/$customerId")
+            .get("/customers/$customerId")
             .then()
             .log().ifValidationFails()
             .statusCode(HttpStatus.OK.value())

@@ -2,11 +2,9 @@ package com.triangl.dashboard
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.given
-import com.triangl.dashboard.controller.DashboardController
+import com.triangl.dashboard.controller.VisitorController
 import com.triangl.dashboard.dto.*
-import com.triangl.dashboard.entity.Customer
-import com.triangl.dashboard.entity.Map
-import com.triangl.dashboard.services.DashboardService
+import com.triangl.dashboard.services.VisitorService
 import org.hamcrest.Matchers
 import org.junit.Before
 import org.junit.Test
@@ -18,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
@@ -27,16 +24,16 @@ import java.time.DayOfWeek
 
 @RunWith(MockitoJUnitRunner::class)
 @WebMvcTest
-class DashboardControllerTest {
+class VisitorControllerTest {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
 
     @Mock
-    private lateinit var dashboardService: DashboardService
+    private lateinit var dashboardService: VisitorService
 
     @InjectMocks
-    private lateinit var dashboardController: DashboardController
+    private lateinit var dashboardController: VisitorController
 
     @Before
     fun init() {
@@ -195,32 +192,5 @@ class DashboardControllerTest {
             .andExpect(MockMvcResultMatchers.jsonPath("$[3].values", Matchers.hasSize<VisitorAverageTimeframeDto>(1)))
             .andExpect(MockMvcResultMatchers.jsonPath("$[4].values", Matchers.hasSize<VisitorAverageTimeframeDto>(1)))
 
-    }
-
-    @Test
-    fun `should requested customer by id`() {
-        /* Given */
-        val customer = Customer().apply {
-            id = "TestId"
-            name = "TestName"
-            maps = setOf(
-                Map().apply {
-                    name = "TestMap"
-                }
-            )
-        }
-
-        given(dashboardService.getCustomerById(customer.id!!)).willReturn(customer)
-
-        /* When, Then */
-        mockMvc
-            .perform(
-                get("/visitors/customer/${customer.id}")
-                    .contentType(MediaType.APPLICATION_JSON))
-            .andDo(MockMvcResultHandlers.print())
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.`is`(customer.id)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.`is`(customer.name)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.maps[0].name", Matchers.`is`(customer.maps!!.first().name)))
     }
 }
