@@ -2,9 +2,9 @@ package com.triangl.dashboard
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.given
-import com.triangl.dashboard.controller.DashboardController
+import com.triangl.dashboard.controller.VisitorController
 import com.triangl.dashboard.dto.*
-import com.triangl.dashboard.services.DashboardService
+import com.triangl.dashboard.services.VisitorService
 import org.hamcrest.Matchers
 import org.junit.Before
 import org.junit.Test
@@ -24,16 +24,16 @@ import java.time.DayOfWeek
 
 @RunWith(MockitoJUnitRunner::class)
 @WebMvcTest
-class DashboardControllerTest {
+class VisitorControllerTest {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
 
     @Mock
-    private lateinit var dashboardService: DashboardService
+    private lateinit var dashboardService: VisitorService
 
     @InjectMocks
-    private lateinit var dashboardController: DashboardController
+    private lateinit var dashboardController: VisitorController
 
     @Before
     fun init() {

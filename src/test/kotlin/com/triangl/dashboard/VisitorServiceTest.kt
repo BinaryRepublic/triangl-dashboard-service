@@ -7,7 +7,7 @@ import com.triangl.dashboard.entity.Coordinate
 import com.triangl.dashboard.helper.InstantHelper
 import com.triangl.dashboard.projection.TrackingPointCoordinateJoin
 import com.triangl.dashboard.projection.TrackingPointLocalDateTimeCoordinateJoin
-import com.triangl.dashboard.services.DashboardService
+import com.triangl.dashboard.services.VisitorService
 import com.triangl.dashboard.services.WeekDayCountService
 import com.triangl.dashboard.webservices.googleSQL.GoogleSQLWs
 import org.assertj.core.api.Assertions.assertThat
@@ -25,7 +25,7 @@ import java.time.temporal.ChronoUnit
 
 
 @RunWith(MockitoJUnitRunner::class)
-class DashboardServiceTest {
+class VisitorServiceTest {
 
     @Mock
     private lateinit var googleSQLWs: GoogleSQLWs
@@ -34,7 +34,7 @@ class DashboardServiceTest {
     private lateinit var weekDayCountService: WeekDayCountService
 
     @InjectMocks
-    private lateinit var dashboardService: DashboardService
+    private lateinit var dashboardService: VisitorService
 
     private val instantHelper = InstantHelper()
 

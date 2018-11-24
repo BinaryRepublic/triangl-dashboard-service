@@ -11,7 +11,7 @@ import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 
 @Service
-class DashboardService (
+class VisitorService (
     val googleSQLWs: GoogleSQLWs,
     val weekDayCountService: WeekDayCountService
 ) {
