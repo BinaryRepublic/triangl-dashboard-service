@@ -3,7 +3,6 @@ package com.triangl.dashboard.config
 import com.auth0.spring.security.api.JwtWebSecurityConfigurer
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest
-import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpMethod
@@ -20,11 +19,6 @@ class OAuthConfig : WebSecurityConfigurerAdapter() {
     private val apiAudience: String? = null
     @Value(value = "\${auth0.issuer}")
     private val issuer: String? = null
-
-    @Bean
-    fun corsFilter(): CorsFilter {
-        return CorsFilter()
-    }
 
     @Throws(Exception::class)
     override fun configure(http: HttpSecurity) {
