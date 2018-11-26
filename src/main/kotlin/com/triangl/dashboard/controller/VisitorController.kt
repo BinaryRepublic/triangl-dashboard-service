@@ -1,6 +1,7 @@
 package com.triangl.dashboard.controller
 
 import com.triangl.dashboard.dto.*
+import com.triangl.dashboard.projection.Manufacturer
 import com.triangl.dashboard.services.VisitorService
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
@@ -47,5 +48,13 @@ class VisitorController (
         val visitorPercentageRespDto = visitorService.getHowManyPercentOfVisitorsVisitedGivenArea(visitorAreaDurationReqDto)
 
         return ResponseEntity.ok().body(visitorPercentageRespDto)
+    }
+
+    @ApiOperation(value = "Get percentage of handy manufactures", response = Manufacturer::class, responseContainer = "List")
+    @PostMapping("/manufactures")
+    fun getPercentageOfManufactures(@RequestBody visitorByTimeAverageReqDto: VisitorByTimeAverageReqDto): ResponseEntity<*> {
+        val manufacturerList = visitorService.getPercentageOfManufactures(visitorByTimeAverageReqDto)
+
+        return ResponseEntity.ok().body(manufacturerList)
     }
 }

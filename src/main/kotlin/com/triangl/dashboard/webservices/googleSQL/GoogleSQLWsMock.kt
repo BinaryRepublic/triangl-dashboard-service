@@ -3,6 +3,7 @@ package com.triangl.dashboard.webservices.googleSQL
 import com.triangl.dashboard.entity.Coordinate
 import com.triangl.dashboard.entity.Customer
 import com.triangl.dashboard.entity.TrackingPoint
+import com.triangl.dashboard.projection.Manufacturer
 import com.triangl.dashboard.projection.TrackingPointCoordinateJoin
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
@@ -32,5 +33,9 @@ class GoogleSQLWsMock: GoogleSQLWs {
 
     override fun selectAllDeviceIdWithCoordinateInTimeframe(mapId: String, start: Instant, end: Instant): List<TrackingPointCoordinateJoin> {
         return listOf(trackingPointCoordinateJoin1, trackingPointCoordinateJoin2, trackingPointCoordinateJoin3, trackingPointCoordinateJoin4, trackingPointCoordinateJoin5)
+    }
+
+    override fun countManufactureAppearances(start: Instant, end: Instant): List<Manufacturer> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

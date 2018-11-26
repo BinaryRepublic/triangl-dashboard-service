@@ -1,4 +1,4 @@
-package com.triangl.dashboard
+package com.triangl.dashboard.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

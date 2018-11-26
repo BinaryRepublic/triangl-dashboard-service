@@ -1,0 +1,1 @@
+LOAD DATA LOCAL INFILE './src/main/resources/db/dataset/macManufacturer.txt' INTO TABLE MacManufacturer;
