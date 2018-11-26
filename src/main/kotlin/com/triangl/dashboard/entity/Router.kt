@@ -10,8 +10,7 @@ class Router {
 
     var mapId: String? = null
 
-    @OneToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "coordinateId", nullable = false)
+    @OneToOne(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], mappedBy = "router")
     var location: Coordinate? = null
 
     var lastUpdatedAt: String? = null

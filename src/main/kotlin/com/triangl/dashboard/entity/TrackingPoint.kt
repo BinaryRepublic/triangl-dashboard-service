@@ -15,7 +15,5 @@ open class TrackingPoint {
     @Column(name = "trackedDeviceId")
     var trackedDeviceId: String? = null
 
-    var coordinateId: String? = null
-
     var timestamp: Instant? = null
 }

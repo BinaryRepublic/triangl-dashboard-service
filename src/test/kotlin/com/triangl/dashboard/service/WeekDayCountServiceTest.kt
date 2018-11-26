@@ -1,4 +1,4 @@
-package com.triangl.dashboard
+package com.triangl.dashboard.service
 
 import com.triangl.dashboard.services.WeekDayCountService
 import org.hamcrest.MatcherAssert.assertThat

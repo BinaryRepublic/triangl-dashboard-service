@@ -1,21 +1,21 @@
 package com.triangl.dashboard.projection
 
 import com.triangl.dashboard.entity.Coordinate
+import com.triangl.dashboard.entity.Router
 import java.time.Instant
 import javax.persistence.*
+import kotlin.jvm.Transient
 
 @Entity
-@Table(name = "TrackingPoint")
 class TrackingPointCoordinateJoin {
+
     @Id
     var id: String? = null
 
-    @Column(name = "trackedDeviceId")
     var trackedDeviceId: String? = null
 
-    @OneToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "coordinateId", nullable = false)
-    var coordinate: Coordinate? = null
-
     var timestamp: Instant? = null
+
+    @Embedded
+    var coordinate: Coordinate? = null
 }
