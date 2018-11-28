@@ -7,7 +7,6 @@ import com.triangl.dashboard.webservices.googleSQL.GoogleSQLWs
 import org.springframework.stereotype.Service
 import java.time.DayOfWeek
 import java.time.LocalTime
-import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 
 @Service
@@ -136,11 +135,11 @@ class VisitorService (
     }
 
     fun getVisitorCountByTimeOfDayAverage(visitorByTimeAverageReqDtoObj: VisitorByTimeAverageReqDto): ArrayList<VisitorByTimeAverageRespDto> {
-        val instantHelper = InstantHelper(ZoneOffset.of("+02:00"))
-        val allDataPoints = googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframeInLocalDateTime(
+        val instantHelper = InstantHelper()
+        val allDataPoints = googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframe(
             visitorByTimeAverageReqDtoObj.customerId,
-            instantHelper.toLocalDateTime(visitorByTimeAverageReqDtoObj.from),
-            instantHelper.toLocalDateTime(visitorByTimeAverageReqDtoObj.to)
+            visitorByTimeAverageReqDtoObj.from,
+            visitorByTimeAverageReqDtoObj.to
         )
 
         val areaFilteredDataPoints = if (visitorByTimeAverageReqDtoObj.area != null) {
@@ -162,10 +161,12 @@ class VisitorService (
             val visitorByTimeAverageResp = VisitorByTimeAverageRespDto(day.name.toLowerCase().capitalize())
             for (hour in 0..23) {
                 val elementsOnWeekDayInTimeframe = areaFilteredDataPoints.filter {
-                    it.timestamp!!.dayOfWeek == day &&
-                    it.timestamp!!.hour == hour
+                    val localDateTime = instantHelper.toLocalDateTime(it.timestamp!!)
+                    localDateTime.dayOfWeek == day &&
+                    localDateTime.hour == hour
                 }.groupBy {
-                    it.timestamp!!.dayOfYear
+                    val localDateTime = instantHelper.toLocalDateTime(it.timestamp!!)
+                    localDateTime.dayOfYear
                 }
 
                 var totalVisitors = 0

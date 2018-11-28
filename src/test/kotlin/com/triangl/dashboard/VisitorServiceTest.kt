@@ -6,7 +6,6 @@ import com.triangl.dashboard.dto.*
 import com.triangl.dashboard.entity.Coordinate
 import com.triangl.dashboard.helper.InstantHelper
 import com.triangl.dashboard.projection.TrackingPointCoordinateJoin
-import com.triangl.dashboard.projection.TrackingPointLocalDateTimeCoordinateJoin
 import com.triangl.dashboard.services.VisitorService
 import com.triangl.dashboard.services.WeekDayCountService
 import com.triangl.dashboard.webservices.googleSQL.GoogleSQLWs
@@ -19,8 +18,6 @@ import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import java.time.DayOfWeek
 import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 
 
@@ -175,12 +172,12 @@ class VisitorServiceTest {
     @Test
     fun `should return average visitor count per time of day per weekday for given area`() {
         /* Given */
-        val dbTrackingPointList = arrayListOf<TrackingPointLocalDateTimeCoordinateJoin>()
+        val dbTrackingPointList = arrayListOf<TrackingPointCoordinateJoin>()
         for (index in 0..trackedDeviceIdsToCreate.lastIndex) {
-            dbTrackingPointList.add(TrackingPointLocalDateTimeCoordinateJoin().apply {
+            dbTrackingPointList.add(TrackingPointCoordinateJoin().apply {
                 coordinate = coordinatesToCreate[index]
                 trackedDeviceId = trackedDeviceIdsToCreate[index]
-                timestamp = LocalDateTime.ofInstant(timestampsToCreate[index], ZoneId.of("Europe/Berlin"))
+                timestamp = timestampsToCreate[index]
             })
         }
 
@@ -204,7 +201,7 @@ class VisitorServiceTest {
         )
 
         given(weekDayCountService.occurrencesOfWeekDaysInTimeframe(any(), any())).willReturn(occurrencesOfWeekDaysInTimeframe)
-        given(googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframeInLocalDateTime(
+        given(googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframe(
             anyString(),
             any(),
             any())
