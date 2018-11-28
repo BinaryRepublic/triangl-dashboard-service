@@ -1,14 +1,12 @@
 package com.triangl.dashboard.services
 
 import com.triangl.dashboard.dto.*
-import com.triangl.dashboard.entity.Coordinate
 import com.triangl.dashboard.helper.InstantHelper
 import com.triangl.dashboard.projection.TrackingPointCoordinateJoin
 import com.triangl.dashboard.webservices.googleSQL.GoogleSQLWs
 import org.springframework.stereotype.Service
 import java.time.DayOfWeek
 import java.time.LocalTime
-import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 
 @Service

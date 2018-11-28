@@ -1,10 +1,10 @@
 package com.triangl.dashboard.projection
 
 import com.triangl.dashboard.entity.Coordinate
-import com.triangl.dashboard.entity.Router
 import java.time.Instant
-import javax.persistence.*
-import kotlin.jvm.Transient
+import javax.persistence.Embedded
+import javax.persistence.Entity
+import javax.persistence.Id
 
 @Entity
 class TrackingPointCoordinateJoin {
