@@ -2,10 +2,10 @@ package com.triangl.dashboard
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.given
+import com.triangl.dashboard.dbModels.servingDB.entity.Coordinate
+import com.triangl.dashboard.dbModels.servingDB.projection.TrackingPointCoordinateJoin
 import com.triangl.dashboard.dto.*
-import com.triangl.dashboard.entity.Coordinate
 import com.triangl.dashboard.helper.InstantHelper
-import com.triangl.dashboard.projection.TrackingPointCoordinateJoin
 import com.triangl.dashboard.services.VisitorService
 import com.triangl.dashboard.services.WeekDayCountService
 import com.triangl.dashboard.webservices.googleSQL.GoogleSQLWs

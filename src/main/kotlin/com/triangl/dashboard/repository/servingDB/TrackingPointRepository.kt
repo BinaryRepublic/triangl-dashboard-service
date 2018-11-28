@@ -1,6 +1,6 @@
-package com.triangl.dashboard.repository
+package com.triangl.dashboard.repository.servingDB
 
-import com.triangl.dashboard.entity.TrackingPoint
+import com.triangl.dashboard.dbModels.servingDB.entity.TrackingPoint
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.Repository
 import java.time.Instant

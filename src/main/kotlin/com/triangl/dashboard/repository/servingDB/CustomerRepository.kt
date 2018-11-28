@@ -1,6 +1,6 @@
-package com.triangl.dashboard.repository
+package com.triangl.dashboard.repository.servingDB
 
-import com.triangl.dashboard.entity.Customer
+import com.triangl.dashboard.dbModels.servingDB.entity.Customer
 import org.springframework.data.repository.Repository
 
 interface CustomerRepository: Repository<Customer, String> {

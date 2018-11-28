@@ -1,9 +1,8 @@
 package com.triangl.dashboard.services
 
+import com.triangl.dashboard.dbModels.servingDB.projection.TrackingPointCoordinateJoin
 import com.triangl.dashboard.dto.*
 import com.triangl.dashboard.helper.InstantHelper
-import com.triangl.dashboard.projection.Manufacturer
-import com.triangl.dashboard.projection.TrackingPointCoordinateJoin
 import com.triangl.dashboard.webservices.googleSQL.GoogleSQLWs
 import org.springframework.stereotype.Service
 import java.time.DayOfWeek
@@ -226,31 +225,34 @@ class VisitorService (
         }
     }
 
-    fun getPercentageOfManufactures (visitorByTimeAverageReqDto: VisitorByTimeAverageReqDto): List<Manufacturer> {
+    fun getPercentageOfManufactures (visitorByTimeAverageReqDto: VisitorByTimeAverageReqDto): List<ManufacturerDto> {
         val macManufacturerDataPointsCount = googleSQLWs.countManufactureAppearances(
             visitorByTimeAverageReqDto.from,
             visitorByTimeAverageReqDto.to
         )
 
+        val totalVisitors = macManufacturerDataPointsCount.sumBy { it.count!! }.toFloat()
         val macsToLookUpManufacturer = macManufacturerDataPointsCount.map { it.manufactorId!! }
 
-        val macsToManufacturerReference = googleSQLWs2.getManufacturerNameforMacsInList(macsToLookUpManufacturer)
+        val macsToManufacturerReference = googleSQLWs.getManufacturerNameForMacsInList(macsToLookUpManufacturer)
 
-        val macsToManufacturerHashMap = HashMap<String, String>()
-        macsToManufacturerReference.map{ macManufacturer ->
-            macsToManufacturerHashMap[macManufacturer.mac] = macManufacturer.company
-        }
+        val macsToManufacturerHashMap = macsToManufacturerReference.groupByTo(HashMap(), {it.companyName!!}, {it.mac!!})
 
-        val totalVisitors = macManufacturerDataPointsCount.sumBy { it.count!! }.toFloat()
+        val macsFoundInManufacturerDB = macsToManufacturerReference.map { it.mac!! }
+        macsToManufacturerHashMap["NotFound"] = macsToLookUpManufacturer.filterNot{mac ->
+            macsFoundInManufacturerDB.contains(mac)
+        } as MutableList<String>
 
-        return macsToManufacturerReference.map{ macManufacturer ->
-            val manufacturerDto = ManufacturerDto(
-                name =macManufacturer.company
-            )
+        return macsToManufacturerHashMap.map{ (companyName, macsList) ->
+            val manufacturerDto = ManufacturerDto(companyName)
 
-            macManufacturerDataPointsCount.filter {
-                macsToManufacturerHashMap[it.manufactorId] === manufacturerDto.name
-            }.size / totalVisitors
+            manufacturerDto.percent = macManufacturerDataPointsCount.filter {
+                it.manufactorId!! in macsList
+            }.sumBy {
+                it.count!!
+            } / totalVisitors
+
+            manufacturerDto
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.triangl.dashboard.services
 
-import com.triangl.dashboard.entity.Customer
+import com.triangl.dashboard.dbModels.servingDB.entity.Customer
 import com.triangl.dashboard.webservices.googleSQL.GoogleSQLWs
 import org.springframework.stereotype.Service
 

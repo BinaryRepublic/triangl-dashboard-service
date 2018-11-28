@@ -1,10 +1,11 @@
 package com.triangl.dashboard.webservices.googleSQL
 
-import com.triangl.dashboard.entity.Coordinate
-import com.triangl.dashboard.entity.Customer
-import com.triangl.dashboard.entity.TrackingPoint
-import com.triangl.dashboard.projection.Manufacturer
-import com.triangl.dashboard.projection.TrackingPointCoordinateJoin
+import com.triangl.dashboard.dbModels.servingDB.entity.Coordinate
+import com.triangl.dashboard.dbModels.servingDB.entity.Customer
+import com.triangl.dashboard.dbModels.servingDB.entity.TrackingPoint
+import com.triangl.dashboard.dbModels.servingDB.projection.ManufacturerCount
+import com.triangl.dashboard.dbModels.servingDB.projection.TrackingPointCoordinateJoin
+import com.triangl.dashboard.dbModels.utilsDB.entity.MacManufacturer
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import java.time.Instant
@@ -35,7 +36,11 @@ class GoogleSQLWsMock: GoogleSQLWs {
         return listOf(trackingPointCoordinateJoin1, trackingPointCoordinateJoin2, trackingPointCoordinateJoin3, trackingPointCoordinateJoin4, trackingPointCoordinateJoin5)
     }
 
-    override fun countManufactureAppearances(start: Instant, end: Instant): List<Manufacturer> {
+    override fun countManufactureAppearances(start: Instant, end: Instant): List<ManufacturerCount> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getManufacturerNameForMacsInList(macs: List<String>): List<MacManufacturer> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

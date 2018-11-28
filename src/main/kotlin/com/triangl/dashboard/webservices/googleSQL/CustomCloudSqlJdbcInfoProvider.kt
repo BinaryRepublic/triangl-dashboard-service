@@ -3,22 +3,23 @@ package com.triangl.dashboard.webservices.googleSQL
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cloud.gcp.autoconfigure.sql.CloudSqlJdbcInfoProvider
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 
-
+@Profile("production")
 @Configuration
 class CustomCloudSqlJdbcInfoProvider: CloudSqlJdbcInfoProvider {
 
-    @Value("\${spring.cloud.gcp.sql.database-name}")
-    val databaseName: String? = null
+    @Value("\${spring.cloud.gcp.sql.jdbc-url}")
+    val url: String? = null
 
-    @Value("\${spring.cloud.gcp.sql.instance-connection-name}")
-    val instanceConnectionName: String? = null
+    @Value("\${spring.cloud.gcp.sql.jdbc-driver}")
+    val driver: String? = null
 
     override fun getJdbcUrl(): String {
-        return "jdbc:mysql://google/$databaseName?useLegacyDatetimeCode=false&cloudSqlInstance=$instanceConnectionName&socketFactory=com.google.cloud.sql.mysql.SocketFactory&useSSL=false"
+        return url!!
     }
 
     override fun getJdbcDriverClass(): String {
-        return "com.mysql.jdbc.Driver"
+        return driver!!
     }
 }

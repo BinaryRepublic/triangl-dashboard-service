@@ -1,4 +1,4 @@
-package com.triangl.dashboard.entity
+package com.triangl.dashboard.dbModels.servingDB.entity
 
 import javax.persistence.Entity
 import javax.persistence.Id
