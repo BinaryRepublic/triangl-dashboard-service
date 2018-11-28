@@ -1,8 +1,13 @@
 package com.triangl.dashboard.webservices.googleSQL
 
 import com.triangl.dashboard.dbModels.servingDB.entity.Customer
+import com.triangl.dashboard.dbModels.servingDB.projection.ManufacturerCount
 import com.triangl.dashboard.dbModels.servingDB.projection.TrackingPointCoordinateJoin
-import com.triangl.dashboard.repository.servingDB.*
+import com.triangl.dashboard.dbModels.utilsDB.entity.MacManufacturer
+import com.triangl.dashboard.repository.servingDB.CustomerRepository
+import com.triangl.dashboard.repository.servingDB.ManufacturerCountRepository
+import com.triangl.dashboard.repository.servingDB.TrackingPointCoordinateJoinRepository
+import com.triangl.dashboard.repository.servingDB.TrackingPointRepository
 import com.triangl.dashboard.repository.utilsDB.ManufacturerRepository
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
