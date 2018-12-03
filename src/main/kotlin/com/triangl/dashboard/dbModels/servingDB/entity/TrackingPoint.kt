@@ -1,4 +1,4 @@
-package com.triangl.dashboard.entity
+package com.triangl.dashboard.dbModels.servingDB.entity
 
 import java.time.Instant
 import javax.persistence.Column

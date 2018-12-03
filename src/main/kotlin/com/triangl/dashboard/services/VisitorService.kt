@@ -1,8 +1,8 @@
 package com.triangl.dashboard.services
 
+import com.triangl.dashboard.dbModels.servingDB.projection.TrackingPointCoordinateJoin
 import com.triangl.dashboard.dto.*
 import com.triangl.dashboard.helper.InstantHelper
-import com.triangl.dashboard.projection.TrackingPointCoordinateJoin
 import com.triangl.dashboard.webservices.googleSQL.GoogleSQLWs
 import org.springframework.stereotype.Service
 import java.time.DayOfWeek
@@ -222,6 +222,37 @@ class VisitorService (
                 area.percentageOfAllVisitors = 0f
             }
             area
+        }
+    }
+
+    fun getPercentageOfManufactures (visitorByTimeAverageReqDto: VisitorByTimeAverageReqDto): List<ManufacturerDto> {
+        val macManufacturerDataPointsCount = googleSQLWs.countManufactureAppearances(
+            visitorByTimeAverageReqDto.from,
+            visitorByTimeAverageReqDto.to
+        )
+
+        val totalVisitors = macManufacturerDataPointsCount.sumBy { it.count!! }.toFloat()
+        val macsToLookUpManufacturer = macManufacturerDataPointsCount.map { it.manufacturerId!! }
+
+        val macsToManufacturerReference = googleSQLWs.getManufacturerNameForMacsInList(macsToLookUpManufacturer)
+
+        val macsToManufacturerHashMap = macsToManufacturerReference.groupByTo(HashMap(), {it.companyName!!}, {it.mac!!})
+
+        val macsFoundInManufacturerDB = macsToManufacturerReference.map { it.mac!! }
+        macsToManufacturerHashMap["NotFound"] = macsToLookUpManufacturer.filterNot{mac ->
+            macsFoundInManufacturerDB.contains(mac)
+        } as MutableList<String>
+
+        return macsToManufacturerHashMap.map{ (companyName, macsList) ->
+            val manufacturerDto = ManufacturerDto(companyName)
+
+            manufacturerDto.percent = macManufacturerDataPointsCount.filter {
+                it.manufacturerId!! in macsList
+            }.sumBy {
+                it.count!!
+            } / totalVisitors
+
+            manufacturerDto
         }
     }
 }

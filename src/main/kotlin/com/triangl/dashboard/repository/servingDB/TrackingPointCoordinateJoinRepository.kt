@@ -1,6 +1,6 @@
-package com.triangl.dashboard.repository
+package com.triangl.dashboard.repository.servingDB
 
-import com.triangl.dashboard.projection.TrackingPointCoordinateJoin
+import com.triangl.dashboard.dbModels.servingDB.projection.TrackingPointCoordinateJoin
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import java.time.Instant

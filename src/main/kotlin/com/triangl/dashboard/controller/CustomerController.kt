@@ -1,6 +1,6 @@
 package com.triangl.dashboard.controller
 
-import com.triangl.dashboard.entity.Customer
+import com.triangl.dashboard.dbModels.servingDB.entity.Customer
 import com.triangl.dashboard.services.CustomerService
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType

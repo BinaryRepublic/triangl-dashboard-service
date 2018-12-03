@@ -1,8 +1,8 @@
 package com.triangl.dashboard
 
 import com.nhaarman.mockito_kotlin.given
-import com.triangl.dashboard.entity.Customer
-import com.triangl.dashboard.entity.Map
+import com.triangl.dashboard.dbModels.servingDB.entity.Customer
+import com.triangl.dashboard.dbModels.servingDB.entity.Map
 import com.triangl.dashboard.services.CustomerService
 import com.triangl.dashboard.webservices.googleSQL.GoogleSQLWs
 import org.assertj.core.api.Assertions.assertThat

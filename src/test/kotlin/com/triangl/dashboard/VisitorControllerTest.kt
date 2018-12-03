@@ -193,4 +193,35 @@ class VisitorControllerTest {
             .andExpect(MockMvcResultMatchers.jsonPath("$[4].values", Matchers.hasSize<VisitorAverageTimeframeDto>(1)))
 
     }
+
+    @Test
+    fun `should return percentage per manufacturer`() {
+        /* Given */
+        val jsonPayload = "{ " +
+            "\"customerId\": \"customer1\"," +
+            "\"from\": \"2018-10-10T09:00:00Z\"," +
+            "\"to\": \"2018-10-10T14:00:00Z\"" +
+        "}"
+
+        val macManufacturer1 = ManufacturerDto(name = "Apple").apply { percent = 0.50f }
+        val macManufacturer2 = ManufacturerDto(name = "Samsung").apply { percent = 0.30f }
+        val macManufacturer3 = ManufacturerDto(name = "One Plus").apply { percent = 0.20f }
+
+        given(dashboardService.getPercentageOfManufactures(any())).willReturn(listOf(macManufacturer1,macManufacturer2,macManufacturer3))
+        /* When, Then */
+        mockMvc
+            .perform(
+                post("/visitors/manufacturers")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(jsonPayload))
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize<VisitorAverageTimeframeDto>(3)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].name", Matchers.`is`("Apple")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].percent",  Matchers.`is`(0.50)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[1].name",  Matchers.`is`("Samsung")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[1].percent",  Matchers.`is`(0.30)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[2].name",  Matchers.`is`("One Plus")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[2].percent",  Matchers.`is`(0.20)))
+    }
 }

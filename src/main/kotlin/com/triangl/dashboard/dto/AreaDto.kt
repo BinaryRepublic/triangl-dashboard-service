@@ -1,7 +1,7 @@
 package com.triangl.dashboard.dto
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.triangl.dashboard.entity.Coordinate
+import com.triangl.dashboard.dbModels.servingDB.entity.Coordinate
 import io.swagger.annotations.ApiModelProperty
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

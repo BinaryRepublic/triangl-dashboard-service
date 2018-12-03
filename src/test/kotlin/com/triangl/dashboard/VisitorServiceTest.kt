@@ -2,10 +2,12 @@ package com.triangl.dashboard
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.given
+import com.triangl.dashboard.dbModels.servingDB.entity.Coordinate
+import com.triangl.dashboard.dbModels.servingDB.projection.ManufacturerCount
+import com.triangl.dashboard.dbModels.servingDB.projection.TrackingPointCoordinateJoin
+import com.triangl.dashboard.dbModels.utilsDB.entity.MacManufacturer
 import com.triangl.dashboard.dto.*
-import com.triangl.dashboard.entity.Coordinate
 import com.triangl.dashboard.helper.InstantHelper
-import com.triangl.dashboard.projection.TrackingPointCoordinateJoin
 import com.triangl.dashboard.services.VisitorService
 import com.triangl.dashboard.services.WeekDayCountService
 import com.triangl.dashboard.webservices.googleSQL.GoogleSQLWs
@@ -262,5 +264,40 @@ class VisitorServiceTest {
         /* Then */
         assertThat(result[0].percentageOfAllVisitors).isEqualTo(0.5f)
         assertThat(result[1].percentageOfAllVisitors).isEqualTo(0.5f)
+    }
+
+    @Test
+    fun `should return the percentage per manufacturer`() {
+        /* Given */
+        val manufacturerCountList = listOf(
+            ManufacturerCount().apply { manufacturerId = "11:11:11"; count = 10 },
+            ManufacturerCount().apply { manufacturerId = "22:22:22"; count = 1 },
+            ManufacturerCount().apply { manufacturerId = "33:33:33"; count = 25 }
+        )
+        val macManufacturerList = listOf(
+            MacManufacturer().apply { mac = "11:11:11"; companyName = "Apple" },
+            MacManufacturer().apply { mac = "22:22:22"; companyName = "Samsung" },
+            MacManufacturer().apply { mac = "33:33:33"; companyName = "One Plus" }
+        )
+
+        val visitorByTimeAverageReqDto = VisitorByTimeAverageReqDto(
+            customerId = "1",
+            from = from,
+            to = from.plusSeconds(40)
+        )
+
+        given(googleSQLWs.countManufactureAppearances(any(),any())).willReturn(manufacturerCountList)
+        given(googleSQLWs.getManufacturerNameForMacsInList(any())).willReturn(macManufacturerList)
+
+        /* When */
+        val result = dashboardService.getPercentageOfManufactures(visitorByTimeAverageReqDto)
+
+        /* Then */
+        assertThat(result[0].name).isEqualTo("Apple")
+        assertThat(result[0].percent).isEqualTo(0.2777778f)
+        assertThat(result[1].name).isEqualTo("One Plus")
+        assertThat(result[1].percent).isEqualTo(0.6944444f)
+        assertThat(result[2].name).isEqualTo("Samsung")
+        assertThat(result[2].percent).isEqualTo(0.027777778f)
     }
 }

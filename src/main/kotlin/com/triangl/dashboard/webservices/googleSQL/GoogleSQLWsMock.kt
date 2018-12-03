@@ -1,9 +1,11 @@
 package com.triangl.dashboard.webservices.googleSQL
 
-import com.triangl.dashboard.entity.Coordinate
-import com.triangl.dashboard.entity.Customer
-import com.triangl.dashboard.entity.TrackingPoint
-import com.triangl.dashboard.projection.TrackingPointCoordinateJoin
+import com.triangl.dashboard.dbModels.servingDB.entity.Coordinate
+import com.triangl.dashboard.dbModels.servingDB.entity.Customer
+import com.triangl.dashboard.dbModels.servingDB.entity.TrackingPoint
+import com.triangl.dashboard.dbModels.servingDB.projection.ManufacturerCount
+import com.triangl.dashboard.dbModels.servingDB.projection.TrackingPointCoordinateJoin
+import com.triangl.dashboard.dbModels.utilsDB.entity.MacManufacturer
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import java.time.Instant
@@ -22,6 +24,14 @@ class GoogleSQLWsMock: GoogleSQLWs {
     val trackingPointCoordinateJoin4 = TrackingPointCoordinateJoin().apply { trackedDeviceId = "2"; coordinate = Coordinate().apply { x = 15f; y = 19f; }; timestamp = Instant.parse("2018-09-24T07:59:59.996Z") }
     val trackingPointCoordinateJoin5 = TrackingPointCoordinateJoin().apply { trackedDeviceId = "2"; coordinate = Coordinate().apply { x = 1f; y = 2f; }; timestamp = Instant.parse("2018-09-24T08:00:20.996Z") }
 
+    val manufacturerCount1 = ManufacturerCount().apply { manufacturerId = "11:11:11"; count = 10 }
+    val manufacturerCount2 = ManufacturerCount().apply { manufacturerId = "22:22:22"; count = 1 }
+    val manufacturerCount3 = ManufacturerCount().apply { manufacturerId = "33:33:33"; count = 25 }
+
+    val macManufacturer1 = MacManufacturer().apply { mac = "11:11:11"; companyName = "Apple" }
+    val macManufacturer2 = MacManufacturer().apply { mac = "22:22:22"; companyName = "Samsung" }
+    val macManufacturer3 = MacManufacturer().apply { mac = "33:33:33"; companyName = "One Plus" }
+
     override fun findCustomerById(customerId: String): Customer {
         return Customer().apply { id = customerId; name = customerId + "Name" }
     }
@@ -32,5 +42,13 @@ class GoogleSQLWsMock: GoogleSQLWs {
 
     override fun selectAllDeviceIdWithCoordinateInTimeframe(mapId: String, start: Instant, end: Instant): List<TrackingPointCoordinateJoin> {
         return listOf(trackingPointCoordinateJoin1, trackingPointCoordinateJoin2, trackingPointCoordinateJoin3, trackingPointCoordinateJoin4, trackingPointCoordinateJoin5)
+    }
+
+    override fun countManufactureAppearances(start: Instant, end: Instant): List<ManufacturerCount> {
+        return listOf(manufacturerCount1, manufacturerCount2, manufacturerCount3)
+    }
+
+    override fun getManufacturerNameForMacsInList(macs: List<String>): List<MacManufacturer> {
+        return listOf(macManufacturer1, macManufacturer2, macManufacturer3)
     }
 }

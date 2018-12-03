@@ -1,6 +1,6 @@
-package com.triangl.dashboard.projection
+package com.triangl.dashboard.dbModels.servingDB.projection
 
-import com.triangl.dashboard.entity.Coordinate
+import com.triangl.dashboard.dbModels.servingDB.entity.Coordinate
 import java.time.Instant
 import javax.persistence.Embedded
 import javax.persistence.Entity

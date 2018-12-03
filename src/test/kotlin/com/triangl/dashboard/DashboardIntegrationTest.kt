@@ -126,4 +126,31 @@ class DashboardIntegrationTest {
             .body("id", `is`("TestCustomer"))
             .body("name", `is`("TestCustomerName"))
     }
+
+    @Test
+    fun `should return percentage per seen manufacturer`() {
+        val jsonPayload = "{ " +
+            "\"customerId\": \"customer1\"," +
+            "\"from\": \"2018-10-10T09:00:00Z\"," +
+            "\"to\": \"2018-10-10T14:00:00Z\"" +
+        "}"
+
+        RestAssured
+            .given()
+            .contentType(ContentType.JSON)
+            .body(jsonPayload)
+            .post("visitors/manufacturers")
+            .then()
+            .log().ifValidationFails()
+            .statusCode(HttpStatus.OK.value())
+            .body("size()", `is`(4))
+            .body("[0].name", `is`("Apple"))
+            .body("[0].percent", `is`(0.2777778f))
+            .body("[1].name", `is`("One Plus"))
+            .body("[1].percent", `is`(0.6944444f))
+            .body("[2].name", `is`("Samsung"))
+            .body("[2].percent", `is`(0.027777778f))
+            .body("[3].name", `is`("NotFound"))
+            .body("[3].percent", `is`(0.0f))
+    }
 }
