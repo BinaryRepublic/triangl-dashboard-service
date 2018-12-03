@@ -232,7 +232,7 @@ class VisitorService (
         )
 
         val totalVisitors = macManufacturerDataPointsCount.sumBy { it.count!! }.toFloat()
-        val macsToLookUpManufacturer = macManufacturerDataPointsCount.map { it.manufactorId!! }
+        val macsToLookUpManufacturer = macManufacturerDataPointsCount.map { it.manufacturerId!! }
 
         val macsToManufacturerReference = googleSQLWs.getManufacturerNameForMacsInList(macsToLookUpManufacturer)
 
@@ -247,7 +247,7 @@ class VisitorService (
             val manufacturerDto = ManufacturerDto(companyName)
 
             manufacturerDto.percent = macManufacturerDataPointsCount.filter {
-                it.manufactorId!! in macsList
+                it.manufacturerId!! in macsList
             }.sumBy {
                 it.count!!
             } / totalVisitors

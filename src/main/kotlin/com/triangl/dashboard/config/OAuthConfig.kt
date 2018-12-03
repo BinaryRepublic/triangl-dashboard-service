@@ -1,8 +1,11 @@
 package com.triangl.dashboard.config
 
+import com.auth0.spring.security.api.JwtWebSecurityConfigurer
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
@@ -19,10 +22,14 @@ class OAuthConfig : WebSecurityConfigurerAdapter() {
 
     @Throws(Exception::class)
     override fun configure(http: HttpSecurity) {
-        http
+        JwtWebSecurityConfigurer
+            .forRS256(apiAudience, issuer)
+            .configure(http)
             .authorizeRequests()
-            .anyRequest().permitAll()
-            .and().csrf().disable()
+            .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()
+            .antMatchers(HttpMethod.OPTIONS,"/**").permitAll()
+            .antMatchers("/**").hasAuthority("read:stats")
+            .anyRequest().denyAll()
     }
 }
 

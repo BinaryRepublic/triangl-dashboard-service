@@ -10,16 +10,16 @@ import org.springframework.context.annotation.Profile
 class CustomCloudSqlJdbcInfoProvider: CloudSqlJdbcInfoProvider {
 
     @Value("\${spring.cloud.gcp.sql.jdbc-url}")
-    val url: String? = null
+    lateinit var url: String
 
     @Value("\${spring.cloud.gcp.sql.jdbc-driver}")
-    val driver: String? = null
+    lateinit var driver: String
 
     override fun getJdbcUrl(): String {
-        return url!!
+        return url
     }
 
     override fun getJdbcDriverClass(): String {
-        return driver!!
+        return driver
     }
 }

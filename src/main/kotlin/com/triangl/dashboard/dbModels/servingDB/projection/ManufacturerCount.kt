@@ -10,7 +10,7 @@ import javax.persistence.Table
 class ManufacturerCount {
     @Id
     @Column(name = "manufactorId")
-    var manufactorId: String? = null
+    var manufacturerId: String? = null
 
     var count: Int? = null
 }

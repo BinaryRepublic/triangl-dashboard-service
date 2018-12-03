@@ -51,7 +51,7 @@ class VisitorController (
     }
 
     @ApiOperation(value = "Get percentage of handy manufactures", response = ManufacturerCount::class, responseContainer = "List")
-    @PostMapping("/manufactures")
+    @PostMapping("/manufacturers")
     fun getPercentageOfManufactures(@RequestBody visitorByTimeAverageReqDto: VisitorByTimeAverageReqDto): ResponseEntity<*> {
         val manufacturerList = visitorService.getPercentageOfManufactures(visitorByTimeAverageReqDto)
 
