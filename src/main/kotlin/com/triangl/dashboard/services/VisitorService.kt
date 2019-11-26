@@ -1,9 +1,11 @@
 package com.triangl.dashboard.services
 
+import com.triangl.dashboard.dbModels.servingDB.entity.Customer
 import com.triangl.dashboard.dbModels.servingDB.projection.TrackingPointCoordinateJoin
 import com.triangl.dashboard.dto.*
-import com.triangl.dashboard.helper.InstantHelper
+import com.triangl.dashboard.support.InstantHelper
 import com.triangl.dashboard.webservices.googleSQL.GoogleSQLWs
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.time.DayOfWeek
 import java.time.LocalTime
@@ -14,6 +16,9 @@ class VisitorService (
     val googleSQLWs: GoogleSQLWs,
     val weekDayCountService: WeekDayCountService
 ) {
+    fun getCustomerId(): String {
+        return (SecurityContextHolder.getContext().authentication.principal as Customer).id!!
+    }
     fun visitorsDuringTimeframe(visitorCountReqDtoObj: VisitorCountReqDto): VisitorCountRespDto {
         val totalTimeFrame = TimeframeDto(visitorCountReqDtoObj.from, visitorCountReqDtoObj.to)
         val visitorCountResp = VisitorCountRespDto()
@@ -26,7 +31,7 @@ class VisitorService (
 
             val newCount = if (visitorCountReqDtoObj.area != null) {
                 googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframe(
-                    visitorCountReqDtoObj.customerId,
+                    getCustomerId(),
                     newFrom,
                     newTo
                 ).filter {
@@ -37,7 +42,7 @@ class VisitorService (
 
             } else {
                 googleSQLWs.countDistinctDeviceIdsInTimeFrame(
-                    visitorCountReqDtoObj.customerId,
+                    getCustomerId(),
                     newFrom,
                     newTo
                 )
@@ -54,7 +59,7 @@ class VisitorService (
 
         visitorCountResp.total = if (visitorCountReqDtoObj.area != null) {
             googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframe(
-                visitorCountReqDtoObj.customerId,
+                getCustomerId(),
                 visitorCountReqDtoObj.from,
                 visitorCountReqDtoObj.to
             ).filter {
@@ -65,7 +70,7 @@ class VisitorService (
 
         } else {
             googleSQLWs.countDistinctDeviceIdsInTimeFrame(
-                visitorCountReqDtoObj.customerId,
+                getCustomerId(),
                 visitorCountReqDtoObj.from,
                 visitorCountReqDtoObj.to
             )
@@ -137,7 +142,7 @@ class VisitorService (
     fun getVisitorCountByTimeOfDayAverage(visitorByTimeAverageReqDtoObj: VisitorByTimeAverageReqDto): ArrayList<VisitorByTimeAverageRespDto> {
         val instantHelper = InstantHelper()
         val allDataPoints = googleSQLWs.selectAllDeviceIdWithCoordinateInTimeframe(
-            visitorByTimeAverageReqDtoObj.customerId,
+            getCustomerId(),
             visitorByTimeAverageReqDtoObj.from,
             visitorByTimeAverageReqDtoObj.to
         )

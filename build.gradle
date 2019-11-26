@@ -65,6 +65,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.cloud:spring-cloud-gcp-starter")
     implementation("org.springframework.cloud:spring-cloud-gcp-starter-sql-mysql")
+    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -74,7 +75,7 @@ dependencies {
     implementation("io.sentry:sentry-spring:1.7.10")
     implementation("io.sentry:sentry-logback:1.7.13")
     implementation("org.springframework:spring-jdbc")
-    implementation("com.auth0:auth0-spring-security-api:1.1.0")
+    implementation("io.jsonwebtoken:jjwt:0.9.1")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("com.nhaarman:mockito-kotlin:1.6.0")

@@ -7,7 +7,7 @@ import com.triangl.dashboard.dbModels.servingDB.projection.ManufacturerCount
 import com.triangl.dashboard.dbModels.servingDB.projection.TrackingPointCoordinateJoin
 import com.triangl.dashboard.dbModels.utilsDB.entity.MacManufacturer
 import com.triangl.dashboard.dto.*
-import com.triangl.dashboard.helper.InstantHelper
+import com.triangl.dashboard.support.InstantHelper
 import com.triangl.dashboard.services.VisitorService
 import com.triangl.dashboard.services.WeekDayCountService
 import com.triangl.dashboard.webservices.googleSQL.GoogleSQLWs

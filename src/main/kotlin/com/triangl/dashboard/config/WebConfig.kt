@@ -11,7 +11,7 @@ class WebConfig: WebMvcConfigurer {
 
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
-            .allowedOrigins("*")
+            .allowedOrigins("http://app.triangl.local.io")
             .allowedMethods("GET", "POST", "PATCH", "DELETE", "OPTIONS")
             .allowCredentials(true)
             .allowedHeaders("Authorization", "Content-Type")

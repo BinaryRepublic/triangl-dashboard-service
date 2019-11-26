@@ -27,7 +27,7 @@ class GoogleSQLWsImp (
     override fun findCustomerById(customerId: String): Customer {
         return customerRepository.findById(
             customerId
-        )
+        )!!
     }
 
     override fun countDistinctDeviceIdsInTimeFrame(customerId: String, start: Instant, end: Instant): Int {

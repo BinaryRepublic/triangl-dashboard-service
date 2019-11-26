@@ -5,6 +5,7 @@ import org.springframework.data.repository.Repository
 
 interface CustomerRepository: Repository<Customer, String> {
 
-    fun findById(customerId: String): Customer
+    fun findById(customerId: String): Customer?
 
+    fun findByUserId(userId: String): Customer?
 }

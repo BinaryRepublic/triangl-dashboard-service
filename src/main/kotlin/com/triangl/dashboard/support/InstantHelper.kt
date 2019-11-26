@@ -1,4 +1,4 @@
-package com.triangl.dashboard.helper
+package com.triangl.dashboard.support
 
 import java.time.Instant
 import java.time.LocalDateTime
