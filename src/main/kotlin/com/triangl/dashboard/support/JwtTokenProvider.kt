@@ -26,7 +26,7 @@ class JwtTokenProvider (
     protected fun init() {
         try {
             val res = restTemplate.exchange(
-                "https://api.triangl.io/auth/.well-known/jwks.json",
+                "https://api.triangl.io/auth-service/auth/.well-known/jwks.json",
                 HttpMethod.GET,
                 null,
                 String::class.java
